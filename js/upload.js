@@ -1,4 +1,5 @@
 import { formatTime } from './utils.js';
+import { songs, displayRecentSongs } from './app.js';
 
 export function initUpload() {
     const uploadBtn = document.querySelector('.upload-btn');
@@ -87,11 +88,20 @@ export function initUpload() {
             filePath: mp3Link,
             coverPath,
             uploadDate: new Date().toISOString(),
-            uploadedBy: 'etudiant' // À remplacer par un identifiant utilisateur
+            uploadedBy: 'etudiant'
         };
 
-        console.log('Nouvelle chanson:', newSong);
-        alert('Chanson soumise ! L’administrateur l’ajoutera bientôt.');
+        // Ajouter la chanson à la liste globale
+        songs.push(newSong);
+        console.log('Nouvelle chanson ajoutée:', newSong);
+
+        // Sauvegarder dans localStorage
+        localStorage.setItem('userSongs', JSON.stringify(songs));
+        console.log('Chansons sauvegardées dans localStorage:', songs);
+
+        // Rafraîchir l'affichage
+        displayRecentSongs(songs);
+        alert('Chanson ajoutée avec succès !');
 
         // Réinitialiser le formulaire et fermer la modale
         uploadForm.reset();

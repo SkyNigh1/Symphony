@@ -1,4 +1,3 @@
-// app.js
 import { loadSongs } from './database.js';
 import { playSong, initPlayer } from './player.js';
 import { initUpload } from './upload.js';
@@ -15,6 +14,10 @@ async function initApp() {
     try {
         // Charger les chansons depuis songs.json
         songs = await loadSongs();
+        
+        // Charger les chansons depuis localStorage (si elles existent)
+        const userSongs = JSON.parse(localStorage.getItem('userSongs')) || [];
+        songs = [...songs, ...userSongs]; // Fusionner songs.json et userSongs
         console.log('Chansons chargées:', songs);
 
         // Initialiser les modules
@@ -53,6 +56,7 @@ function displayRecentSongs(songs) {
     songs.forEach(song => {
         const songCard = document.createElement('div');
         songCard.className = 'track-card';
+        songCard.dataset.songId = song.id; // Ajouter l'ID pour les favoris
         songCard.innerHTML = `
             <div class="track-card-cover">
                 <img src="${song.coverPath || 'assets/images/default-cover.jpg'}" alt="${song.title}">
@@ -81,4 +85,4 @@ function displayRecentSongs(songs) {
 // Lancer l’application
 document.addEventListener('DOMContentLoaded', initApp);
 
-export { songs, currentSong };
+export { songs, currentSong, displayRecentSongs };
