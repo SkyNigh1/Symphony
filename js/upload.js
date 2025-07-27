@@ -1,4 +1,3 @@
-// upload.js
 import { formatTime } from './utils.js';
 
 export function initUpload() {
@@ -23,6 +22,7 @@ export function initUpload() {
     // Soumettre le formulaire
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        console.log('Formulaire soumis');
 
         const mp3Link = document.querySelector('#mp3-link').value;
         const coverLink = document.querySelector('#cover-link').value;
@@ -31,15 +31,52 @@ export function initUpload() {
         const album = document.querySelector('#album').value;
         const trackNumber = document.querySelector('#track-number').value || 1;
 
-        if (!mp3Link.includes('drive.google.com/uc?export=download')) {
-            alert('Veuillez entrer un lien Google Drive valide pour le MP3.');
+        // Validation des liens MP3
+        const isValidGoogleDrive = mp3Link.includes('drive.google.com/uc?export=download');
+        const isValidGitHub = mp3Link.includes('github.io');
+        const isValidDropbox = mp3Link.includes('dropbox.com') && mp3Link.includes('?dl=1');
+        
+        if (!isValidGoogleDrive && !isValidGitHub && !isValidDropbox) {
+            console.log('Validation échouée: Lien MP3 invalide');
+            alert('Veuillez entrer un lien Google Drive, GitHub ou Dropbox valide pour le MP3.');
             return;
         }
 
-        // Ignorer la récupération de la durée pour le test
-        const duration = 0; // Valeur par défaut temporaire
-        console.log('Durée définie à 0 pour le test');
+        // Validation du lien de couverture (optionnel)
+        let coverPath = coverLink || 'assets/images/default-cover.jpg';
+        if (coverLink) {
+            const isValidCoverGoogleDrive = coverLink.includes('drive.google.com/uc?export=download');
+            const isValidCoverGitHub = coverLink.includes('github.io');
+            const isValidCoverDropbox = coverLink.includes('dropbox.com') && coverLink.includes('?dl=1');
+            if (!isValidCoverGoogleDrive && !isValidCoverGitHub && !isValidCoverDropbox) {
+                console.log('Validation échouée: Lien de couverture invalide, utilisation de l’image par défaut');
+                coverPath = 'assets/images/default-cover.jpg';
+            }
+        }
 
+        // Calculer la durée du MP3
+        let duration = 0;
+        try {
+            console.log('Tentative de chargement du MP3:', mp3Link);
+            const audio = new Audio(mp3Link);
+            await new Promise((resolve, reject) => {
+                audio.addEventListener('loadedmetadata', () => {
+                    duration = Math.floor(audio.duration);
+                    console.log('Durée du MP3:', duration);
+                    resolve();
+                });
+                audio.addEventListener('error', (e) => {
+                    console.error('Erreur de chargement MP3:', e.target.error);
+                    reject(`Erreur lors du chargement du MP3: ${e.target.error.message}`);
+                });
+            });
+        } catch (error) {
+            console.error('Erreur catchée:', error);
+            alert('Impossible de charger le MP3. Vérifiez le lien ou essayez un autre service.');
+            return;
+        }
+
+        // Créer l’objet chanson
         const newSong = {
             id: `song${Date.now()}`,
             title,
@@ -48,15 +85,16 @@ export function initUpload() {
             trackNumber: parseInt(trackNumber),
             duration,
             filePath: mp3Link,
-            coverPath: coverLink || 'assets/images/default-cover.jpg',
+            coverPath,
             uploadDate: new Date().toISOString(),
-            uploadedBy: 'etudiant'
+            uploadedBy: 'etudiant' // À remplacer par un identifiant utilisateur
         };
 
         console.log('Nouvelle chanson:', newSong);
         alert('Chanson soumise ! L’administrateur l’ajoutera bientôt.');
 
+        // Réinitialiser le formulaire et fermer la modale
         uploadForm.reset();
         modalOverlay.classList.remove('show');
     });
-}
+}   
