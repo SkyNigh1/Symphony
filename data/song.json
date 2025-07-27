@@ -1,0 +1,14 @@
+[
+    {
+        "id": "song1",
+        "title": "Morceau Exemple",
+        "artist": "Artiste Exemple",
+        "album": "Album Exemple",
+        "trackNumber": 1,
+        "duration": 180,
+        "filePath": "https://drive.google.com/uc?export=download&id=FILE_ID_1",
+        "coverPath": "https://drive.google.com/uc?export=download&id=COVER_ID_1",
+        "uploadDate": "2025-07-27T22:00:00Z",
+        "uploadedBy": "etudiant1"
+    }
+]
