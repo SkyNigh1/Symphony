@@ -161,15 +161,21 @@ export function playSong(song) {
     if (trackArtist) trackArtist.textContent = song.artist;
     if (coverImage) {
         const coverSrc = song.coverPath || 'assets/images/default-cover.jpg';
+        console.log('Chargement de la cover:', coverSrc);
         coverImage.src = coverSrc;
         coverImage.alt = song.title;
         
         // Extraire la couleur dominante et appliquer le dégradé
+        console.log('Début extraction couleur...');
         extractDominantColor(coverSrc).then(color => {
+            console.log('Couleur extraite avec succès:', color);
             applyDynamicGradient(color);
-        }).catch(() => {
-            // Fallback vers les couleurs par défaut
-            applyDynamicGradient('#6366f1');
+        }).catch(error => {
+            console.log('Erreur extraction couleur:', error);
+            // Fallback vers une couleur générée depuis le titre
+            const fallbackColor = generateColorFromText(song.title + song.artist);
+            console.log('Utilisation couleur fallback:', fallbackColor);
+            applyDynamicGradient(fallbackColor);
         });
     }
 
@@ -196,41 +202,52 @@ export function playSong(song) {
 function extractDominantColor(imageSrc) {
     return new Promise((resolve, reject) => {
         const img = new Image();
-        img.crossOrigin = 'anonymous';
         
+        // Essayer sans crossOrigin d'abord
         img.onload = function() {
             try {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 
-                canvas.width = img.width;
-                canvas.height = img.height;
+                // Réduire la taille pour améliorer les performances
+                const size = 100;
+                canvas.width = size;
+                canvas.height = size;
                 
-                ctx.drawImage(img, 0, 0);
+                ctx.drawImage(img, 0, 0, size, size);
                 
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const imageData = ctx.getImageData(0, 0, size, size);
                 const pixels = imageData.data;
                 
-                // Compter les couleurs
+                // Compter les couleurs avec un échantillonnage plus large
                 const colorCount = {};
-                for (let i = 0; i < pixels.length; i += 16) { // Échantillonnage
+                for (let i = 0; i < pixels.length; i += 20) { // Échantillonnage plus large
                     const r = pixels[i];
                     const g = pixels[i + 1];
                     const b = pixels[i + 2];
                     const alpha = pixels[i + 3];
                     
                     if (alpha > 128) { // Ignorer les pixels transparents
-                        const color = `${Math.floor(r/32)*32},${Math.floor(g/32)*32},${Math.floor(b/32)*32}`;
+                        // Regrouper les couleurs similaires
+                        const rBucket = Math.floor(r / 51) * 51; // 0, 51, 102, 153, 204, 255
+                        const gBucket = Math.floor(g / 51) * 51;
+                        const bBucket = Math.floor(b / 51) * 51;
+                        
+                        const color = `${rBucket},${gBucket},${bBucket}`;
                         colorCount[color] = (colorCount[color] || 0) + 1;
                     }
                 }
                 
-                // Trouver la couleur la plus fréquente
+                // Trouver la couleur la plus fréquente (en évitant le noir et le blanc)
                 let maxCount = 0;
-                let dominantColor = '100,100,100';
+                let dominantColor = '100,100,200'; // Couleur par défaut
                 
                 for (const color in colorCount) {
-                    if (colorCount[color] > maxCount) {
+                    const [r, g, b] = color.split(',').map(Number);
+                    
+                    // Éviter les couleurs trop sombres ou trop claires
+                    const brightness = (r + g + b) / 3;
+                    if (brightness > 30 && brightness < 200 && colorCount[color] > maxCount) {
                         maxCount = colorCount[color];
                         dominantColor = color;
                     }
@@ -239,15 +256,61 @@ function extractDominantColor(imageSrc) {
                 const [r, g, b] = dominantColor.split(',').map(Number);
                 const hexColor = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
                 
+                console.log('Couleur dominante extraite:', hexColor);
                 resolve(hexColor);
             } catch (error) {
-                reject(error);
+                console.log('Erreur canvas, utilisation de couleur par défaut:', error);
+                // Utiliser une couleur basée sur le nom de la chanson/artiste comme fallback
+                const fallbackColor = generateColorFromText(currentSong?.title || 'default');
+                resolve(fallbackColor);
             }
         };
         
-        img.onerror = () => reject(new Error('Impossible de charger l\'image'));
+        img.onerror = () => {
+            console.log('Erreur de chargement image, utilisation de couleur par défaut');
+            const fallbackColor = generateColorFromText(currentSong?.title || 'default');
+            resolve(fallbackColor);
+        };
+        
+        // Essayer de charger l'image
         img.src = imageSrc;
+        
+        // Timeout de sécurité
+        setTimeout(() => {
+            if (!img.complete) {
+                console.log('Timeout image, utilisation de couleur par défaut');
+                const fallbackColor = generateColorFromText(currentSong?.title || 'default');
+                resolve(fallbackColor);
+            }
+        }, 3000);
     });
+}
+
+// Fonction de fallback pour générer une couleur basée sur du texte
+function generateColorFromText(text) {
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+        hash = text.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    
+    // Générer des couleurs vives mais pas trop saturées
+    const hue = Math.abs(hash) % 360;
+    const saturation = 60 + (Math.abs(hash) % 30); // Entre 60% et 90%
+    const lightness = 45 + (Math.abs(hash) % 20); // Entre 45% et 65%
+    
+    return hslToHex(hue, saturation, lightness);
+}
+
+// Convertir HSL en hexadécimal
+function hslToHex(h, s, l) {
+    l /= 100;
+    const a = s * Math.min(l, 1 - l) / 100;
+    const f = n => {
+        const k = (n + h / 30) % 12;
+        const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+        return Math.round(255 * color).toString(16).padStart(2, '0');
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
 }
 
 // Fonction pour appliquer un dégradé dynamique basé sur la couleur
@@ -255,17 +318,27 @@ function applyDynamicGradient(baseColor) {
     const nowPlaying = document.querySelector('.now-playing');
     if (!nowPlaying) return;
     
+    console.log('Application du dégradé avec la couleur:', baseColor);
+    
     // Convertir la couleur hex en RGB
     const r = parseInt(baseColor.slice(1, 3), 16);
     const g = parseInt(baseColor.slice(3, 5), 16);
     const b = parseInt(baseColor.slice(5, 7), 16);
     
-    // Créer des variations plus sombres et plus claires
-    const darkerColor = `rgb(${Math.max(0, r - 40)}, ${Math.max(0, g - 40)}, ${Math.max(0, b - 40)})`;
-    const lighterColor = `rgb(${Math.min(255, r + 20)}, ${Math.min(255, g + 20)}, ${Math.min(255, b + 20)})`;
+    // Créer des variations plus intéressantes
+    const darkerColor = `rgb(${Math.max(0, r - 60)}, ${Math.max(0, g - 60)}, ${Math.max(0, b - 60)})`;
+    const lighterColor = `rgb(${Math.min(255, r + 40)}, ${Math.min(255, g + 40)}, ${Math.min(255, b + 40)})`;
+    const accentColor = `rgb(${Math.min(255, r + 20)}, ${Math.min(255, g + 20)}, ${Math.min(255, b + 20)})`;
     
-    // Appliquer le dégradé
-    nowPlaying.style.background = `linear-gradient(135deg, ${lighterColor}, ${darkerColor})`;
+    // Appliquer un dégradé plus complexe et attractif
+    const gradient = `linear-gradient(135deg, ${lighterColor} 0%, ${baseColor} 50%, ${darkerColor} 100%)`;
+    nowPlaying.style.background = gradient;
+    
+    // Ajouter une animation subtile lors du changement
+    nowPlaying.style.transition = 'background 0.8s ease-in-out';
+    
+    // Optionnel : changer aussi la couleur des accents
+    document.documentElement.style.setProperty('--dynamic-accent', baseColor);
 }
 
 function togglePlayPause() {
