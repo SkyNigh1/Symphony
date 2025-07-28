@@ -1,6 +1,6 @@
 export async function loadSongs() {
     try {
-        const response = await fetch('data/songs.json');
+        const response = await fetch('data/song.json');
         if (!response.ok) {
             console.warn('songs.json not found, returning empty array');
             return [];
