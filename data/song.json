@@ -1,13 +1,25 @@
 [
-    {
-        "id": "song1",
-        "title": "Daredevil",
-        "artist": "Artiste Exemple",
-        "album": "Album Exemple",
-        "trackNumber": 1,
-        "duration": 180,
-        "filePath": "https://skynigh1.github.io/Symphony/assets/audio/Daredevil.mp3",
-        "uploadDate": "2025-07-27T22:00:00Z",
-        "uploadedBy": "etudiant1"
-    }
+  {
+    "id": "song1",
+    "title": "Daredevil",
+    "artist": "Artiste Exemple",
+    "album": "Album Exemple",
+    "trackNumber": 1,
+    "duration": 180,
+    "filePath": "https://skynigh1.github.io/Symphony/assets/audio/Daredevil.mp3",
+    "uploadDate": "2025-07-27T22:00:00Z",
+    "uploadedBy": "etudiant1"
+  },
+  {
+    "id": "song_1753719136419",
+    "title": "Daredevil",
+    "artist": "Bandai Namco Games",
+    "album": "Ace Combat 7 Original Soundtrack",
+    "trackNumber": 1,
+    "duration": 321,
+    "filePath": "https://skynigh1.github.io/Symphony/assets/audio/Daredevil.mp3",
+    "coverPath": "https://skynigh1.github.io/Symphony/assets/cover/cover.webp",
+    "uploadDate": "2025-07-28T16:12:16.419Z",
+    "uploadedBy": "user"
+  }
 ]
