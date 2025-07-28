@@ -8,7 +8,7 @@
     }
     
     .content-grid {
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* Ajusté pour la taille réduite */
     }
     
     .player-panel {
@@ -31,7 +31,7 @@
     }
     
     .content-grid {
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); /* Ajusté pour la taille réduite */
     }
     
     .track-list-header,
@@ -65,8 +65,8 @@
     }
     
     .content-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Ajusté pour la taille réduite */
+        gap: 0.75rem; /* Réduit */
     }
     
     .now-playing {
@@ -185,16 +185,16 @@
     }
     
     .content-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Ajusté pour la taille réduite */
+        gap: 0.5rem; /* Réduit */
     }
     
     .track-card {
-        padding: 1rem;
+        padding: 0.5rem; /* Réduit */
     }
     
     .track-card-cover {
-        height: 160px;
+        height: 80px; /* Réduit */
     }
     
     /* Player becomes bottom bar */
@@ -285,6 +285,23 @@
         display: none;
     }
     
+    /* Boutons favoris en mobile */
+    .track-card-actions {
+        opacity: 1; /* Toujours visible en mobile */
+        top: 0.25rem;
+        right: 0.25rem;
+    }
+    
+    .favorite-btn {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .favorite-btn svg {
+        width: 12px;
+        height: 12px;
+    }
+    
     /* List view adjustments */
     .track-list-header {
         display: none;
@@ -330,25 +347,25 @@
     }
     
     .content-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); /* Ajusté pour la taille réduite */
+        gap: 0.5rem;
     }
     
     .track-card {
-        padding: 0.75rem;
+        padding: 0.5rem;
     }
     
     .track-card-cover {
-        height: 140px;
+        height: 70px; /* Réduit */
     }
     
     .track-card-title {
-        font-size: 1rem;
+        font-size: 0.8rem; /* Réduit */
     }
     
     .track-card-artist,
     .track-card-album {
-        font-size: 0.8rem;
+        font-size: 0.7rem; /* Réduit */
     }
     
     .now-playing {
@@ -391,20 +408,41 @@
     .main-container {
         height: calc(100vh - var(--header-height) - 110px);
     }
+    
+    /* Boutons favoris très petits en mobile */
+    .track-card-actions {
+        top: 0.2rem;
+        right: 0.2rem;
+    }
+    
+    .favorite-btn {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .favorite-btn svg {
+        width: 10px;
+        height: 10px;
+    }
 }
 
 /* Small Mobile */
 @media (max-width: 480px) {
     .content-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* Ajusté pour la taille réduite */
     }
     
     .track-card-cover {
-        height: 120px;
+        height: 60px; /* Réduit */
     }
     
     .track-card-title {
-        font-size: 0.9rem;
+        font-size: 0.75rem; /* Réduit */
+    }
+    
+    .track-card-artist,
+    .track-card-album {
+        font-size: 0.65rem; /* Réduit */
     }
     
     .nav-link svg {

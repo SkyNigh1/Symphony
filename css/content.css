@@ -22,19 +22,19 @@
     background-clip: text;
 }
 
-/* Content Grid */
+/* Content Grid - Taille réduite de moitié */
 .content-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Réduit de 280px à 140px */
+    gap: 0.75rem; /* Réduit de 1.5rem à 0.75rem */
     margin-bottom: 2rem;
 }
 
-/* Track Cards */
+/* Track Cards - Taille réduite */
 .track-card {
     background: var(--surface-color);
-    border-radius: 12px;
-    padding: 1.5rem;
+    border-radius: 8px; /* Réduit de 12px à 8px */
+    padding: 0.75rem; /* Réduit de 1.5rem à 0.75rem */
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
     cursor: pointer;
@@ -56,8 +56,8 @@
 }
 
 .track-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(var(--primary-rgb), 0.3);
+    transform: translateY(-2px); /* Réduit de -4px à -2px */
+    box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.3); /* Réduit l'ombre */
     border-color: var(--primary-color);
 }
 
@@ -67,10 +67,10 @@
 
 .track-card-cover {
     width: 100%;
-    height: 200px;
-    border-radius: 8px;
+    height: 100px; /* Réduit de 200px à 100px */
+    border-radius: 6px; /* Réduit de 8px à 6px */
     overflow: hidden;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem; /* Réduit de 1rem à 0.5rem */
     position: relative;
     background: var(--bg-secondary);
 }
@@ -108,8 +108,8 @@
     background: var(--primary-color);
     border: none;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    width: 30px; /* Réduit de 60px à 30px */
+    height: 30px; /* Réduit de 60px à 30px */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -117,6 +117,11 @@
     cursor: pointer;
     transition: all 0.3s ease;
     transform: scale(0.8);
+}
+
+.play-btn-overlay svg {
+    width: 16px; /* Réduit la taille du SVG */
+    height: 16px;
 }
 
 .track-card:hover .play-btn-overlay {
@@ -134,55 +139,102 @@
 }
 
 .track-card-title {
-    font-size: 1.1rem;
+    font-size: 0.85rem; /* Réduit de 1.1rem à 0.85rem */
     font-weight: 600;
     color: var(--text-primary);
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.25rem 0; /* Réduit la marge */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .track-card-artist {
-    font-size: 0.9rem;
+    font-size: 0.75rem; /* Réduit de 0.9rem à 0.75rem */
     color: var(--text-secondary);
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.25rem 0; /* Réduit la marge */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .track-card-album {
-    font-size: 0.8rem;
+    font-size: 0.7rem; /* Réduit de 0.8rem à 0.7rem */
     color: var(--text-muted);
-    margin: 0;
+    margin: 0 0 0.5rem 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-/* Album Cards */
+/* Bouton favori dans les cartes */
+.track-card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.25rem;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.track-card:hover .track-card-actions {
+    opacity: 1;
+}
+
+.favorite-btn {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 24px; /* Taille réduite */
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.favorite-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    color: var(--accent-color);
+    transform: scale(1.1);
+}
+
+.favorite-btn.active {
+    color: var(--accent-color);
+    background: rgba(255, 255, 255, 1);
+}
+
+.favorite-btn svg {
+    width: 14px; /* Taille réduite */
+    height: 14px;
+}
+
+/* Album Cards - Taille réduite */
 .album-card {
     background: var(--surface-color);
-    border-radius: 12px;
-    padding: 1.5rem;
+    border-radius: 8px; /* Réduit de 12px à 8px */
+    padding: 0.75rem; /* Réduit de 1.5rem à 0.75rem */
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
     cursor: pointer;
 }
 
 .album-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(var(--primary-rgb), 0.2);
+    transform: translateY(-2px); /* Réduit de -4px à -2px */
+    box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.2); /* Réduit l'ombre */
     border-color: var(--primary-color);
 }
 
 .album-card-cover {
     width: 100%;
-    height: 200px;
-    border-radius: 8px;
+    height: 100px; /* Réduit de 200px à 100px */
+    border-radius: 6px; /* Réduit de 8px à 6px */
     overflow: hidden;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem; /* Réduit de 1rem à 0.5rem */
     background: var(--bg-secondary);
 }
 
@@ -193,20 +245,20 @@
 }
 
 .album-card-title {
-    font-size: 1.1rem;
+    font-size: 0.85rem; /* Réduit de 1.1rem à 0.85rem */
     font-weight: 600;
     color: var(--text-primary);
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.25rem 0; /* Réduit la marge */
 }
 
 .album-card-artist {
-    font-size: 0.9rem;
+    font-size: 0.75rem; /* Réduit de 0.9rem à 0.75rem */
     color: var(--text-secondary);
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.25rem 0; /* Réduit la marge */
 }
 
 .album-card-info {
-    font-size: 0.8rem;
+    font-size: 0.7rem; /* Réduit de 0.8rem à 0.7rem */
     color: var(--text-muted);
     display: flex;
     justify-content: space-between;
@@ -368,25 +420,25 @@
 /* Loading States */
 .loading-card {
     background: var(--surface-color);
-    border-radius: 12px;
-    padding: 1.5rem;
+    border-radius: 8px; /* Réduit */
+    padding: 0.75rem; /* Réduit */
     border: 1px solid var(--border-color);
     animation: pulse 2s infinite;
 }
 
 .loading-cover {
     width: 100%;
-    height: 200px;
+    height: 100px; /* Réduit de 200px à 100px */
     background: var(--bg-secondary);
-    border-radius: 8px;
-    margin-bottom: 1rem;
+    border-radius: 6px; /* Réduit */
+    margin-bottom: 0.5rem; /* Réduit */
 }
 
 .loading-text {
-    height: 1rem;
+    height: 0.8rem; /* Réduit */
     background: var(--bg-secondary);
     border-radius: 4px;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem; /* Réduit */
 }
 
 .loading-text.short {
