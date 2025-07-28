@@ -48,6 +48,16 @@ export function initPlayer() {
         }
     });
 
+    audioPlayer.addEventListener('play', () => {
+        isPlaying = true;
+        updatePlayPauseButton();
+    });
+
+    audioPlayer.addEventListener('pause', () => {
+        isPlaying = false;
+        updatePlayPauseButton();
+    });
+
     audioPlayer.addEventListener('ended', () => {
         isPlaying = false;
         updatePlayPauseButton();
@@ -269,15 +279,17 @@ function togglePlayPause() {
     if (isPlaying) {
         audioPlayer.pause();
         isPlaying = false;
+        updatePlayPauseButton();
     } else {
         audioPlayer.play().then(() => {
             isPlaying = true;
+            updatePlayPauseButton();
         }).catch(error => {
             console.error('Erreur lors de la lecture:', error);
+            isPlaying = false;
+            updatePlayPauseButton();
         });
     }
-    
-    updatePlayPauseButton();
 }
 
 function updatePlayPauseButton() {
