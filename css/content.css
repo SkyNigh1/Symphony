@@ -176,7 +176,7 @@
     right: 0.5rem;
     opacity: 0;
     transition: opacity 0.3s ease;
-    z-index: 10; /* Assure que le bouton reste au-dessus */
+    z-index: 10;
 }
 
 .track-card:hover .track-card-actions {
@@ -187,42 +187,53 @@
     background: rgba(255, 255, 255, 0.9);
     border: none;
     border-radius: 50%;
-    width: 24px; /* Taille réduite */
+    width: 24px;
     height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-muted);
+    color: #6a6a6a; /* Couleur grise pour l'état normal */
     cursor: pointer;
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
 }
 
-/* État normal : hover du bouton */
+/* État hover du bouton - GARDER LE COEUR VISIBLE */
 .favorite-btn:hover {
     background: rgba(255, 255, 255, 1);
-    color: var(--accent-color);
+    color: #8c45ff; /* Couleur violette */
     transform: scale(1.1);
 }
 
-/* État actif (en favoris) */
+/* État actif (en favoris) - TOUJOURS VIOLET */
 .favorite-btn.active {
-    color: var(--accent-color);
+    color: #8c45ff; /* Couleur violette pour les favoris */
     background: rgba(255, 255, 255, 1);
 }
 
-/* État actif + hover : garde le cœur visible */
+/* État actif + hover - GARDER LE COEUR VIOLET VISIBLE */
 .favorite-btn.active:hover {
-    color: var(--accent-color);
-    background: rgba(255, 255, 255, 1);
+    color: #8c45ff !important; /* Force la couleur violette */
+    background: rgba(255, 255, 255, 1) !important;
     transform: scale(1.1);
 }
 
-/* Assure que le SVG reste visible */
+/* SVG du cœur - TOUJOURS VISIBLE */
 .favorite-btn svg {
-    width: 14px; /* Taille réduite */
+    width: 14px;
     height: 14px;
-    pointer-events: none; /* Évite les conflits d'événements */
+    pointer-events: none;
+    fill: currentColor; /* Utilise la couleur du parent */
+    stroke: currentColor;
+}
+
+/* Force la visibilité du SVG dans tous les états */
+.favorite-btn:hover svg,
+.favorite-btn.active svg,
+.favorite-btn.active:hover svg {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
 }
 
 /* Album Cards - Taille réduite */
