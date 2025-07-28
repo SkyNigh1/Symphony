@@ -282,8 +282,6 @@ function togglePlayPause() {
 
 function updatePlayPauseButton() {
     const playPauseBtn = document.querySelector('.play-pause');
-    const playIcon = document.querySelector('.play-icon');
-    const pauseIcon = document.querySelector('.pause-icon');
     
     if (playPauseBtn) {
         if (isPlaying) {
@@ -293,15 +291,7 @@ function updatePlayPauseButton() {
         }
     }
     
-    if (playIcon && pauseIcon) {
-        if (isPlaying) {
-            playIcon.style.display = 'none';
-            pauseIcon.style.display = 'block';
-        } else {
-            playIcon.style.display = 'block';
-            pauseIcon.style.display = 'none';
-        }
-    }
+    // Ne pas modifier directement le style display - laisser le CSS s'en charger via la classe .playing
 }
 
 function playNext() {
