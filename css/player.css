@@ -178,7 +178,7 @@
 
 .play-pause:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(29, 185, 84, 0.4);
+    box-shadow: 0 6px 20px rgba(73, 29, 185, 0.4);
 }
 
 .play-pause .play-icon {
