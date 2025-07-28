@@ -3,32 +3,25 @@ import { playSong, initPlayer } from './player.js';
 import { initUpload } from './upload.js';
 import { initSearch } from './search.js';
 import { initNavigation } from './navigation.js';
-import { initFavorites } from './favorites.js';
+import { initFavorites, updateAllFavoriteButtons } from './favorites.js';
 
-// État global
 let songs = [];
 let currentSong = null;
 
-// Initialisation
 async function initApp() {
     try {
-        // Charger les chansons depuis songs.json
         songs = await loadSongs();
-        
-        // Charger les chansons depuis localStorage (si elles existent)
         const userSongs = JSON.parse(localStorage.getItem('userSongs')) || [];
-        songs = [...songs, ...userSongs]; // Fusionner songs.json et userSongs
+        songs = [...songs, ...userSongs];
         console.log('Chansons chargées:', songs);
 
-        // Initialiser les modules
         initPlayer();
         initUpload();
         initSearch();
         initNavigation();
         initFavorites();
-
-        // Afficher les chansons récentes dans la grille
         displayRecentSongs(songs);
+        updateAllFavoriteButtons(); // Add this to initialize favorite buttons
     } catch (error) {
         console.error('Erreur lors de l’initialisation:', error);
     }

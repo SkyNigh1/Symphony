@@ -15,10 +15,17 @@ export function initPlayer() {
     const volumeFill = document.querySelector('.volume-fill');
     const volumeHandle = document.querySelector('.volume-handle');
 
-    // Play/Pause handling
+    if (!audio) {
+        console.error('audio-player element not found');
+        return;
+    }
+
     playPauseBtn.addEventListener('click', () => {
         if (audio.paused) {
-            audio.play();
+            audio.play().catch(error => {
+                console.error('Erreur lors de la lecture:', error);
+                alert('Impossible de lire la chanson. Vérifiez le lien ou le format du fichier.');
+            });
             playPauseBtn.classList.add('playing');
         } else {
             audio.pause();
@@ -26,18 +33,14 @@ export function initPlayer() {
         }
     });
 
-    // Previous/Next buttons (implement queue logic if needed)
     prevBtn.addEventListener('click', () => {
-        // Add logic to play previous song
         console.log('Previous song');
     });
 
     nextBtn.addEventListener('click', () => {
-        // Add logic to play next song
         console.log('Next song');
     });
 
-    // Progress bar update
     audio.addEventListener('timeupdate', () => {
         const progress = (audio.currentTime / audio.duration) * 100;
         progressFill.style.width = `${progress}%`;
@@ -45,7 +48,6 @@ export function initPlayer() {
         totalTimeEl.textContent = formatTime(audio.duration || 0);
     });
 
-    // Seek functionality
     let isDraggingProgress = false;
     progressBar.addEventListener('mousedown', (e) => {
         isDraggingProgress = true;
@@ -70,7 +72,6 @@ export function initPlayer() {
         progressFill.style.width = `${pos * 100}%`;
     }
 
-    // Volume control
     let isDraggingVolume = false;
     volumeSlider.addEventListener('mousedown', (e) => {
         isDraggingVolume = true;
@@ -116,26 +117,35 @@ export function initPlayer() {
         }
     });
 
-    // Initialize volume
     audio.volume = 1;
     volumeFill.style.width = '100%';
 
-    // Handle audio metadata
     audio.addEventListener('loadedmetadata', () => {
         totalTimeEl.textContent = formatTime(audio.duration);
     });
 }
 
-export function playSong(song) {
+export async function playSong(song) {
     const audio = document.querySelector('#audio-player');
     const coverImg = document.querySelector('.track-cover img');
     const titleEl = document.querySelector('.track-title');
     const artistEl = document.querySelector('.track-artist');
 
-    audio.src = song.filePath;
-    coverImg.src = song.coverPath || 'assets/images/default-cover.jpg';
-    titleEl.textContent = song.title;
-    artistEl.textContent = song.artist;
-    audio.play();
-    document.querySelector('.play-pause').classList.add('playing');
+    if (!audio || !coverImg || !titleEl || !artistEl) {
+        console.error('Required DOM elements not found');
+        return;
+    }
+
+    try {
+        audio.src = song.filePath;
+        await audio.load(); // Ensure the audio is loaded before playing
+        coverImg.src = song.coverPath || 'assets/images/default-cover.jpg';
+        titleEl.textContent = song.title;
+        artistEl.textContent = song.artist;
+        await audio.play();
+        document.querySelector('.play-pause').classList.add('playing');
+    } catch (error) {
+        console.error('Erreur lors de la lecture de la chanson:', error);
+        alert('Impossible de lire la chanson. Vérifiez le lien ou le format du fichier.');
+    }
 }

@@ -1,8 +1,10 @@
-// database.js
 export async function loadSongs() {
     try {
         const response = await fetch('data/songs.json');
-        if (!response.ok) throw new Error('Erreur lors du chargement de songs.json');
+        if (!response.ok) {
+            console.warn('songs.json not found, returning empty array');
+            return [];
+        }
         const songs = await response.json();
         return songs;
     } catch (error) {

@@ -3,11 +3,10 @@ import { addFavorite, removeFavorite, getFavorites } from './database.js';
 import { playSong } from './player.js';
 
 export function initFavorites() {
-    // Ajouter des boutons de favoris sur chaque carte
     document.addEventListener('click', (e) => {
         if (e.target.closest('.track-card')) {
             const card = e.target.closest('.track-card');
-            const songId = card.dataset.songId; // Suppose que l’ID est ajouté dynamiquement
+            const songId = card.dataset.songId;
             if (!songId) return;
 
             const isFavorite = getFavorites().includes(songId);
@@ -20,14 +19,9 @@ export function initFavorites() {
             }
         }
     });
-
-    // Mettre à jour l’affichage des favoris
-    document.addEventListener('DOMContentLoaded', () => {
-        updateAllFavoriteButtons();
-    });
 }
 
-function updateFavoriteButton(card, isFavorite) {
+export function updateFavoriteButton(card, isFavorite) {
     const button = card.querySelector('.favorite-btn') || document.createElement('button');
     button.className = `favorite-btn ${isFavorite ? 'active' : ''}`;
     button.innerHTML = `
@@ -40,7 +34,7 @@ function updateFavoriteButton(card, isFavorite) {
     }
 }
 
-function updateAllFavoriteButtons() {
+export function updateAllFavoriteButtons() {
     const cards = document.querySelectorAll('.track-card');
     cards.forEach(card => {
         const songId = card.dataset.songId;
@@ -50,11 +44,3 @@ function updateAllFavoriteButtons() {
         }
     });
 }
-
-// Modifier app.js pour ajouter dataset.songId
-document.addEventListener('DOMContentLoaded', () => {
-    const contentGrid = document.querySelector('.content-grid');
-    contentGrid.addEventListener('DOMSubtreeModified', () => {
-        updateAllFavoriteButtons();
-    });
-});
