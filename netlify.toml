@@ -1,3 +1,3 @@
 [build]
-  publish = "public" # Dossier où se trouve votre site (ajustez si nécessaire)
+  publish = "." # Dossier où se trouve votre site (ajustez si nécessaire)
   functions = "netlify/functions"
