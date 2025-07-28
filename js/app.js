@@ -21,16 +21,19 @@ async function initApp() {
         initNavigation();
         initFavorites();
         displayRecentSongs(songs);
-        updateAllFavoriteButtons(); // Add this to initialize favorite buttons
+        updateAllFavoriteButtons();
     } catch (error) {
         console.error('Erreur lors de l’initialisation:', error);
     }
 }
 
-// Afficher les chansons récentes
 function displayRecentSongs(songs) {
     const contentGrid = document.querySelector('.content-grid');
-    contentGrid.innerHTML = ''; // Vider la grille
+    if (!contentGrid) {
+        console.error('Error: .content-grid element not found in the DOM');
+        return;
+    }
+    contentGrid.innerHTML = ''; // Clear the grid
 
     if (songs.length === 0) {
         contentGrid.innerHTML = `
@@ -49,7 +52,7 @@ function displayRecentSongs(songs) {
     songs.forEach(song => {
         const songCard = document.createElement('div');
         songCard.className = 'track-card';
-        songCard.dataset.songId = song.id; // Ajouter l'ID pour les favoris
+        songCard.dataset.songId = song.id;
         songCard.innerHTML = `
             <div class="track-card-cover">
                 <img src="${song.coverPath || 'assets/images/default-cover.jpg'}" alt="${song.title}">
@@ -75,7 +78,9 @@ function displayRecentSongs(songs) {
     });
 }
 
-// Lancer l’application
-document.addEventListener('DOMContentLoaded', initApp);
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM fully loaded');
+    initApp();
+});
 
 export { songs, currentSong, displayRecentSongs };
