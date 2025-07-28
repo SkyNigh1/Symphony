@@ -35,7 +35,7 @@ export function updateFavoriteButton(card, isFavorite) {
 }
 
 export function updateAllFavoriteButtons() {
-    const cards = document.querySelectorAll('.track-card');
+    const cards = document.querySelectorAll('.content-grid .track-card');
     cards.forEach(card => {
         const songId = card.dataset.songId;
         if (songId) {

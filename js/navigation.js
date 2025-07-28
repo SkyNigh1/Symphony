@@ -1,31 +1,18 @@
-import { songs } from './app.js';
-import { getFavorites } from './database.js';
-import { playSong } from './player.js';
-
-export function initNavigation() {
-    const navItems = document.querySelectorAll('.nav-item');
-    const contentTitle = document.querySelector('.content-title');
-
-    navItems.forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            navItems.forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
-
-            const view = item.querySelector('.nav-link').textContent.trim();
-            contentTitle.textContent = view;
-            displayView(view);
-        });
-    });
-}
-
 function displayView(view) {
-    const contentGrid = document.querySelector('.content-grid');
-    if (!contentGrid) {
-        console.error('content-grid element not found');
+    const contentArea = document.querySelector('.content-area');
+    if (!contentArea) {
+        console.error('Error: .content-area element not found in the DOM for view:', view);
         return;
     }
-    contentGrid.innerHTML = '';
+    // Clear only the content below content-header
+    const emptyState = contentArea.querySelector('.empty-state');
+    if (emptyState) {
+        emptyState.remove();
+    }
+    const existingGrid = contentArea.querySelector('.content-grid');
+    if (existingGrid) {
+        existingGrid.remove();
+    }
 
     let filteredSongs = [];
     switch (view) {
@@ -50,10 +37,10 @@ function displayView(view) {
     }
 
     if (filteredSongs.length === 0) {
-        contentGrid.innerHTML = `
+        contentArea.innerHTML += `
             <div class="empty-state">
                 <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 9l3 3m0 0l3-3m-3 3v6"></path>
+                    <path d="M9 9l6 6m0-6l-6 6"></path>
                     <circle cx="12" cy="12" r="10"></circle>
                 </svg>
                 <h3>Aucun contenu disponible</h3>
@@ -63,6 +50,8 @@ function displayView(view) {
         return;
     }
 
+    const songContainer = document.createElement('div');
+    songContainer.className = 'content-grid';
     filteredSongs.forEach(song => {
         const songCard = document.createElement('div');
         songCard.className = 'track-card';
@@ -85,18 +74,28 @@ function displayView(view) {
             </div>
         `;
         songCard.addEventListener('click', () => playSong(song));
-        contentGrid.appendChild(songCard);
+        songContainer.appendChild(songCard);
     });
+    contentArea.appendChild(songContainer);
 }
 
 function displayAlbums(albums) {
-    const contentGrid = document.querySelector('.content-grid');
-    if (!contentGrid) {
-        console.error('content-grid element not found');
+    const contentArea = document.querySelector('.content-area');
+    if (!contentArea) {
+        console.error('Error: .content-area element not found in the DOM for albums');
         return;
     }
-    contentGrid.innerHTML = '';
+    const emptyState = contentArea.querySelector('.empty-state');
+    if (emptyState) {
+        emptyState.remove();
+    }
+    const existingGrid = contentArea.querySelector('.content-grid');
+    if (existingGrid) {
+        existingGrid.remove();
+    }
 
+    const albumContainer = document.createElement('div');
+    albumContainer.className = 'content-grid';
     albums.forEach(album => {
         const albumCard = document.createElement('div');
         albumCard.className = 'track-card';
@@ -121,18 +120,28 @@ function displayAlbums(albums) {
             contentTitle.textContent = album;
             displayViewByAlbum(album);
         });
-        contentGrid.appendChild(albumCard);
+        albumContainer.appendChild(albumCard);
     });
+    contentArea.appendChild(albumContainer);
 }
 
 function displayArtists(artists) {
-    const contentGrid = document.querySelector('.content-grid');
-    if (!contentGrid) {
-        console.error('content-grid element not found');
+    const contentArea = document.querySelector('.content-area');
+    if (!contentArea) {
+        console.error('Error: .content-area element not found in the DOM for artists');
         return;
     }
-    contentGrid.innerHTML = '';
+    const emptyState = contentArea.querySelector('.empty-state');
+    if (emptyState) {
+        emptyState.remove();
+    }
+    const existingGrid = contentArea.querySelector('.content-grid');
+    if (existingGrid) {
+        existingGrid.remove();
+    }
 
+    const artistContainer = document.createElement('div');
+    artistContainer.className = 'content-grid';
     artists.forEach(artist => {
         const artistCard = document.createElement('div');
         artistCard.className = 'track-card';
@@ -156,18 +165,29 @@ function displayArtists(artists) {
             contentTitle.textContent = artist;
             displayViewByArtist(artist);
         });
-        contentGrid.appendChild(artistCard);
+        artistContainer.appendChild(artistCard);
     });
+    contentArea.appendChild(artistContainer);
 }
 
 function displayViewByAlbum(album) {
-    const contentGrid = document.querySelector('.content-grid');
-    if (!contentGrid) {
-        console.error('content-grid element not found');
+    const contentArea = document.querySelector('.content-area');
+    if (!contentArea) {
+        console.error('Error: .content-area element not found in the DOM for album:', album);
         return;
     }
+    const emptyState = contentArea.querySelector('.empty-state');
+    if (emptyState) {
+        emptyState.remove();
+    }
+    const existingGrid = contentArea.querySelector('.content-grid');
+    if (existingGrid) {
+        existingGrid.remove();
+    }
+
     const filteredSongs = songs.filter(song => song.album === album);
-    contentGrid.innerHTML = '';
+    const songContainer = document.createElement('div');
+    songContainer.className = 'content-grid';
     filteredSongs.forEach(song => {
         const songCard = document.createElement('div');
         songCard.className = 'track-card';
@@ -189,18 +209,29 @@ function displayViewByAlbum(album) {
             </div>
         `;
         songCard.addEventListener('click', () => playSong(song));
-        contentGrid.appendChild(songCard);
+        songContainer.appendChild(songCard);
     });
+    contentArea.appendChild(songContainer);
 }
 
 function displayViewByArtist(artist) {
-    const contentGrid = document.querySelector('.content-grid');
-    if (!contentGrid) {
-        console.error('content-grid element not found');
+    const contentArea = document.querySelector('.content-area');
+    if (!contentArea) {
+        console.error('Error: .content-area element not found in the DOM for artist:', artist);
         return;
     }
+    const emptyState = contentArea.querySelector('.empty-state');
+    if (emptyState) {
+        emptyState.remove();
+    }
+    const existingGrid = contentArea.querySelector('.content-grid');
+    if (existingGrid) {
+        existingGrid.remove();
+    }
+
     const filteredSongs = songs.filter(song => song.artist === artist);
-    contentGrid.innerHTML = '';
+    const songContainer = document.createElement('div');
+    songContainer.className = 'content-grid';
     filteredSongs.forEach(song => {
         const songCard = document.createElement('div');
         songCard.className = 'track-card';
@@ -222,6 +253,7 @@ function displayViewByArtist(artist) {
             </div>
         `;
         songCard.addEventListener('click', () => playSong(song));
-        contentGrid.appendChild(songCard);
+        songContainer.appendChild(songCard);
     });
+    contentArea.appendChild(songContainer);
 }

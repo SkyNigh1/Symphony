@@ -3,7 +3,7 @@ import { playSong } from './player.js';
 
 export function initSearch() {
     const searchBar = document.querySelector('.search-bar');
-    const contentGrid = document.querySelector('.content-grid');
+    const contentArea = document.querySelector('.content-area');
 
     searchBar.addEventListener('input', () => {
         const query = searchBar.value.toLowerCase().trim();
@@ -16,13 +16,24 @@ export function initSearch() {
     });
 
     function displaySearchResults(results) {
-        contentGrid.innerHTML = '';
+        if (!contentArea) {
+            console.error('Error: .content-area element not found in the DOM');
+            return;
+        }
+        const emptyState = contentArea.querySelector('.empty-state');
+        if (emptyState) {
+            emptyState.remove();
+        }
+        const existingGrid = contentArea.querySelector('.content-grid');
+        if (existingGrid) {
+            existingGrid.remove();
+        }
 
         if (results.length === 0) {
-            contentGrid.innerHTML = `
+            contentArea.innerHTML += `
                 <div class="empty-state">
                     <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 9l3 3m0 0l3-3m-3 3v6"></path>
+                        <path d="M9 9l6 6m0-6l-6 6"></path>
                         <circle cx="12" cy="12" r="10"></circle>
                     </svg>
                     <h3>Aucun résultat trouvé</h3>
@@ -32,6 +43,8 @@ export function initSearch() {
             return;
         }
 
+        const songContainer = document.createElement('div');
+        songContainer.className = 'content-grid';
         results.forEach(song => {
             const songCard = document.createElement('div');
             songCard.className = 'track-card';
@@ -53,7 +66,8 @@ export function initSearch() {
                 </div>
             `;
             songCard.addEventListener('click', () => playSong(song));
-            contentGrid.appendChild(songCard);
+            songContainer.appendChild(songCard);
         });
+        contentArea.appendChild(songContainer);
     }
 }
