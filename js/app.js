@@ -1,99 +1,118 @@
+import { loadSongs } from './database.js';
+import { initUpload } from './upload.js';
+import { initSearch } from './search.js';
+import { initNavigation } from './navigation.js';
+import { initFavorites, updateAllFavoriteButtons } from './favorites.js';
+import { initPlayer } from './player.js';
 import { formatTime } from './utils.js';
-import { songs, displayRecentSongs } from './app.js';
 
-export function initUpload() {
-    const uploadBtn = document.querySelector('.upload-btn');
-    const modalOverlay = document.querySelector('.modal-overlay');
-    const modalClose = document.querySelectorAll('.modal-close');
-    const uploadForm = document.querySelector('.upload-form');
+// Variable globale pour stocker les chansons
+export let songs = [];
 
-    uploadBtn.addEventListener('click', () => {
-        modalOverlay.classList.add('show');
-    });
+// Fonction pour afficher les chansons récentes
+export function displayRecentSongs(songsToDisplay) {
+    const contentArea = document.querySelector('.content-area');
+    const emptyState = contentArea.querySelector('.empty-state');
+    
+    // Supprimer l'état vide s'il existe
+    if (emptyState) {
+        emptyState.remove();
+    }
+    
+    // Supprimer la grille existante s'il y en a une
+    const existingGrid = contentArea.querySelector('.content-grid');
+    if (existingGrid) {
+        existingGrid.remove();
+    }
 
-    modalClose.forEach(btn => {
-        btn.addEventListener('click', () => {
-            modalOverlay.classList.remove('show');
-            uploadForm.reset();
-        });
-    });
+    if (songsToDisplay.length === 0) {
+        contentArea.innerHTML += `
+            <div class="empty-state">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 9l6 6m0-6l-6 6"></path>
+                    <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+                <h3>Aucune musique trouvée</h3>
+                <p>Commencez par ajouter votre première chanson !</p>
+            </div>
+        `;
+        return;
+    }
 
-    uploadForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        console.log('Formulaire soumis');
-
-        const mp3Link = document.querySelector('#mp3-link').value;
-        const coverLink = document.querySelector('#cover-link').value;
-        const title = document.querySelector('#track-title').value;
-        const artist = document.querySelector('#track-artist').value;
-        const album = document.querySelector('#track-album').value;
-        const trackNumber = document.querySelector('#track-number').value || 1;
-
-        const isValidGoogleDrive = mp3Link.includes('drive.google.com/uc?export=download');
-        const isValidGitHub = mp3Link.includes('github.io');
-        const isValidDropbox = mp3Link.includes('dropbox.com') && mp3Link.includes('?dl=1');
+    // Créer la grille de contenu
+    const contentGrid = document.createElement('div');
+    contentGrid.className = 'content-grid';
+    
+    songsToDisplay.forEach(song => {
+        const songCard = document.createElement('div');
+        songCard.className = 'track-card';
+        songCard.dataset.songId = song.id;
+        songCard.innerHTML = `
+            <div class="track-card-cover">
+                <img src="${song.coverPath || 'assets/images/default-cover.jpg'}" alt="${song.title}">
+                <div class="track-card-overlay">
+                    <button class="play-btn-overlay">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="track-card-info">
+                <h3 class="track-card-title">${song.title}</h3>
+                <p class="track-card-artist">${song.artist}</p>
+                <p class="track-card-album">${song.album}</p>
+            </div>
+        `;
         
-        if (!isValidGoogleDrive && !isValidGitHub && !isValidDropbox) {
-            console.log('Validation échouée: Lien MP3 invalide');
-            alert('Veuillez entrer un lien Google Drive, GitHub ou Dropbox valide pour le MP3.');
-            return;
-        }
-
-        let coverPath = coverLink || 'assets/images/default-cover.jpg';
-        if (coverLink) {
-            const isValidCoverGoogleDrive = coverLink.includes('drive.google.com/uc?export=download');
-            const isValidCoverGitHub = coverLink.includes('github.io');
-            const isValidCoverDropbox = coverLink.includes('dropbox.com') && coverLink.includes('?dl=1');
-            if (!isValidCoverGoogleDrive && !isValidCoverGitHub && !isValidCoverDropbox) {
-                console.log('Validation échouée: Lien de couverture invalide, utilisation de l’image par défaut');
-                coverPath = 'assets/images/default-cover.jpg';
-            }
-        }
-
-        let duration = 0;
-        try {
-            console.log('Tentative de chargement du MP3:', mp3Link);
-            const audio = new Audio(mp3Link);
-            await new Promise((resolve, reject) => {
-                audio.addEventListener('loadedmetadata', () => {
-                    duration = Math.floor(audio.duration);
-                    console.log('Durée du MP3:', duration);
-                    resolve();
-                });
-                audio.addEventListener('error', (e) => {
-                    console.error('Erreur de chargement MP3:', e.target.error);
-                    reject(`Erreur lors du chargement du MP3: ${e.target.error.message}`);
-                });
+        // Ajouter l'événement de clic pour jouer la chanson
+        songCard.addEventListener('click', () => {
+            // Importer playSong dynamiquement pour éviter les imports circulaires
+            import('./player.js').then(({ playSong }) => {
+                playSong(song);
             });
-        } catch (error) {
-            console.error('Erreur catchée:', error);
-            alert('Impossible de charger le MP3. Vérifiez le lien ou essayez un autre service.');
-            return;
-        }
-
-        const newSong = {
-            id: `song${Date.now()}`,
-            title,
-            artist,
-            album,
-            trackNumber: parseInt(trackNumber),
-            duration,
-            filePath: mp3Link,
-            coverPath,
-            uploadDate: new Date().toISOString(),
-            uploadedBy: 'etudiant'
-        };
-
-        songs.push(newSong);
-        console.log('Nouvelle chanson ajoutée:', newSong);
-
-        localStorage.setItem('userSongs', JSON.stringify(songs));
-        console.log('Chansons sauvegardées dans localStorage:', songs);
-
-        displayRecentSongs(songs);
-        alert('Chanson ajoutée avec succès !');
-
-        uploadForm.reset();
-        modalOverlay.classList.remove('show');
+        });
+        
+        contentGrid.appendChild(songCard);
     });
+    
+    contentArea.appendChild(contentGrid);
+    
+    // Mettre à jour les boutons favoris
+    updateAllFavoriteButtons();
 }
+
+// Fonction d'initialisation principale
+async function init() {
+    try {
+        console.log('Initialisation de l\'application...');
+        
+        // Charger les chansons depuis le fichier JSON et localStorage
+        const jsonSongs = await loadSongs();
+        const userSongs = JSON.parse(localStorage.getItem('userSongs')) || [];
+        
+        // Fusionner les chansons
+        songs.length = 0; // Vider le tableau
+        songs.push(...jsonSongs, ...userSongs);
+        
+        console.log('Chansons chargées:', songs);
+        
+        // Afficher les chansons récentes
+        displayRecentSongs(songs);
+        
+        // Initialiser tous les modules
+        initUpload();
+        initSearch();
+        initNavigation();
+        initFavorites();
+        initPlayer();
+        
+        console.log('Application initialisée avec succès');
+        
+    } catch (error) {
+        console.error('Erreur lors de l\'initialisation:', error);
+    }
+}
+
+// Démarrer l'application quand le DOM est prêt
+document.addEventListener('DOMContentLoaded', init);

@@ -1,151 +1,233 @@
 import { formatTime } from './utils.js';
 
+let currentSong = null;
+let isPlaying = false;
+let currentTime = 0;
+let duration = 0;
+let volume = 1;
+
 export function initPlayer() {
-    const audio = document.querySelector('#audio-player');
+    const audioPlayer = document.getElementById('audio-player');
     const playPauseBtn = document.querySelector('.play-pause');
     const prevBtn = document.querySelector('.prev-btn');
     const nextBtn = document.querySelector('.next-btn');
+    const shuffleBtn = document.querySelector('.shuffle-btn');
+    const repeatBtn = document.querySelector('.repeat-btn');
+    const volumeBtn = document.querySelector('.volume-btn');
     const progressBar = document.querySelector('.progress-bar');
     const progressFill = document.querySelector('.progress-fill');
     const progressHandle = document.querySelector('.progress-handle');
-    const currentTimeEl = document.querySelector('.current-time');
-    const totalTimeEl = document.querySelector('.total-time');
-    const volumeBtn = document.querySelector('.volume-btn');
     const volumeSlider = document.querySelector('.volume-slider');
     const volumeFill = document.querySelector('.volume-fill');
     const volumeHandle = document.querySelector('.volume-handle');
+    const currentTimeEl = document.querySelector('.current-time');
+    const durationEl = document.querySelector('.duration');
 
-    if (!audio) {
-        console.error('audio-player element not found');
+    if (!audioPlayer) {
+        console.error('Lecteur audio non trouvé');
         return;
     }
 
-    playPauseBtn.addEventListener('click', () => {
-        if (audio.paused) {
-            audio.play().catch(error => {
-                console.error('Erreur lors de la lecture:', error);
-                alert('Impossible de lire la chanson. Vérifiez le lien ou le format du fichier.');
-            });
-            playPauseBtn.classList.add('playing');
-        } else {
-            audio.pause();
-            playPauseBtn.classList.remove('playing');
+    // Événements du lecteur audio
+    audioPlayer.addEventListener('loadedmetadata', () => {
+        duration = audioPlayer.duration;
+        durationEl.textContent = formatTime(duration);
+    });
+
+    audioPlayer.addEventListener('timeupdate', () => {
+        currentTime = audioPlayer.currentTime;
+        currentTimeEl.textContent = formatTime(currentTime);
+        
+        if (duration > 0) {
+            const progress = (currentTime / duration) * 100;
+            progressFill.style.width = `${progress}%`;
+            progressHandle.style.left = `${progress}%`;
         }
     });
 
-    prevBtn.addEventListener('click', () => {
-        console.log('Previous song');
+    audioPlayer.addEventListener('ended', () => {
+        isPlaying = false;
+        updatePlayPauseButton();
+        // Auto-play next song si disponible
+        playNext();
     });
 
-    nextBtn.addEventListener('click', () => {
-        console.log('Next song');
+    audioPlayer.addEventListener('error', (e) => {
+        console.error('Erreur de lecture audio:', e);
+        alert('Erreur lors de la lecture du fichier audio');
     });
 
-    audio.addEventListener('timeupdate', () => {
-        const progress = (audio.currentTime / audio.duration) * 100;
-        progressFill.style.width = `${progress}%`;
-        currentTimeEl.textContent = formatTime(audio.currentTime);
-        totalTimeEl.textContent = formatTime(audio.duration || 0);
-    });
+    // Bouton play/pause
+    playPauseBtn.addEventListener('click', togglePlayPause);
 
-    let isDraggingProgress = false;
-    progressBar.addEventListener('mousedown', (e) => {
-        isDraggingProgress = true;
-        updateProgress(e);
-    });
+    // Boutons précédent/suivant
+    prevBtn.addEventListener('click', playPrevious);
+    nextBtn.addEventListener('click', playNext);
 
-    document.addEventListener('mousemove', (e) => {
-        if (isDraggingProgress) {
-            updateProgress(e);
+    // Barre de progression
+    progressBar.addEventListener('click', (e) => {
+        if (duration > 0) {
+            const rect = progressBar.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            const newTime = percent * duration;
+            audioPlayer.currentTime = newTime;
         }
     });
 
-    document.addEventListener('mouseup', () => {
-        isDraggingProgress = false;
-    });
-
-    function updateProgress(e) {
-        const rect = progressBar.getBoundingClientRect();
-        const pos = (e.clientX - rect.left) / rect.width;
-        const seekTime = pos * audio.duration;
-        audio.currentTime = Math.min(Math.max(seekTime, 0), audio.duration);
-        progressFill.style.width = `${pos * 100}%`;
-    }
-
-    let isDraggingVolume = false;
-    volumeSlider.addEventListener('mousedown', (e) => {
-        isDraggingVolume = true;
-        updateVolume(e);
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (isDraggingVolume) {
-            updateVolume(e);
-        }
-    });
-
-    document.addEventListener('mouseup', () => {
-        isDraggingVolume = false;
-    });
-
-    function updateVolume(e) {
+    // Contrôle du volume
+    volumeSlider.addEventListener('click', (e) => {
         const rect = volumeSlider.getBoundingClientRect();
-        const volume = (e.clientX - rect.left) / rect.width;
-        audio.volume = Math.min(Math.max(volume, 0), 1);
-        volumeFill.style.width = `${audio.volume * 100}%`;
-    }
-
-    volumeBtn.addEventListener('click', () => {
-        if (audio.volume > 0) {
-            audio.volume = 0;
-            volumeFill.style.width = '0%';
-            volumeBtn.innerHTML = `
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                    <line x1="23" y1="9" x2="17" y2="15"></line>
-                    <line x1="17" y1="9" x2="23" y2="15"></line>
-                </svg>`;
-        } else {
-            audio.volume = 1;
-            volumeFill.style.width = '100%';
-            volumeBtn.innerHTML = `
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-                </svg>`;
-        }
+        const percent = (e.clientX - rect.left) / rect.width;
+        setVolume(percent);
     });
 
-    audio.volume = 1;
-    volumeFill.style.width = '100%';
+    volumeBtn.addEventListener('click', toggleMute);
 
-    audio.addEventListener('loadedmetadata', () => {
-        totalTimeEl.textContent = formatTime(audio.duration);
+    // Initialiser le volume
+    setVolume(0.7);
+}
+
+export function playSong(song) {
+    if (!song || !song.filePath) {
+        console.error('Chanson invalide:', song);
+        return;
+    }
+
+    console.log('Lecture de la chanson:', song);
+    currentSong = song;
+    
+    const audioPlayer = document.getElementById('audio-player');
+    const trackTitle = document.querySelector('.track-title');
+    const trackArtist = document.querySelector('.track-artist');
+    const coverImage = document.querySelector('.cover-image');
+
+    // Mettre à jour l'interface
+    if (trackTitle) trackTitle.textContent = song.title;
+    if (trackArtist) trackArtist.textContent = song.artist;
+    if (coverImage) {
+        coverImage.src = song.coverPath || 'assets/images/default-cover.jpg';
+        coverImage.alt = song.title;
+    }
+
+    // Charger et jouer l'audio
+    if (audioPlayer) {
+        audioPlayer.src = song.filePath;
+        audioPlayer.load();
+        
+        audioPlayer.addEventListener('canplay', () => {
+            audioPlayer.play().then(() => {
+                isPlaying = true;
+                updatePlayPauseButton();
+            }).catch(error => {
+                console.error('Erreur lors de la lecture:', error);
+                alert('Impossible de lire cette chanson. Vérifiez le lien du fichier.');
+            });
+        }, { once: true });
+    }
+
+    // Mettre à jour la queue
+    updateQueue();
+}
+
+function togglePlayPause() {
+    const audioPlayer = document.getElementById('audio-player');
+    
+    if (!currentSong || !audioPlayer.src) {
+        console.log('Aucune chanson sélectionnée');
+        return;
+    }
+
+    if (isPlaying) {
+        audioPlayer.pause();
+        isPlaying = false;
+    } else {
+        audioPlayer.play().then(() => {
+            isPlaying = true;
+        }).catch(error => {
+            console.error('Erreur lors de la lecture:', error);
+        });
+    }
+    
+    updatePlayPauseButton();
+}
+
+function updatePlayPauseButton() {
+    const playIcon = document.querySelector('.play-icon');
+    const pauseIcon = document.querySelector('.pause-icon');
+    
+    if (playIcon && pauseIcon) {
+        if (isPlaying) {
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = 'block';
+        } else {
+            playIcon.style.display = 'block';
+            pauseIcon.style.display = 'none';
+        }
+    }
+}
+
+function playNext() {
+    if (!currentSong) return;
+    
+    // Import dynamique pour éviter les dépendances circulaires
+    import('./app.js').then(({ songs }) => {
+        const currentIndex = songs.findIndex(song => song.id === currentSong.id);
+        const nextIndex = (currentIndex + 1) % songs.length;
+        if (songs[nextIndex]) {
+            playSong(songs[nextIndex]);
+        }
     });
 }
 
-export async function playSong(song) {
-    const audio = document.querySelector('#audio-player');
-    const coverImg = document.querySelector('.track-cover img');
-    const titleEl = document.querySelector('.track-title');
-    const artistEl = document.querySelector('.track-artist');
+function playPrevious() {
+    if (!currentSong) return;
+    
+    import('./app.js').then(({ songs }) => {
+        const currentIndex = songs.findIndex(song => song.id === currentSong.id);
+        const prevIndex = currentIndex > 0 ? currentIndex - 1 : songs.length - 1;
+        if (songs[prevIndex]) {
+            playSong(songs[prevIndex]);
+        }
+    });
+}
 
-    if (!audio || !coverImg || !titleEl || !artistEl) {
-        console.error('Required DOM elements not found');
-        return;
+function setVolume(vol) {
+    volume = Math.max(0, Math.min(1, vol));
+    const audioPlayer = document.getElementById('audio-player');
+    const volumeFill = document.querySelector('.volume-fill');
+    const volumeHandle = document.querySelector('.volume-handle');
+    
+    if (audioPlayer) {
+        audioPlayer.volume = volume;
     }
+    
+    if (volumeFill && volumeHandle) {
+        const percent = volume * 100;
+        volumeFill.style.width = `${percent}%`;
+        volumeHandle.style.left = `${percent}%`;
+    }
+}
 
-    try {
-        audio.src = song.filePath;
-        await audio.load(); // Ensure the audio is loaded before playing
-        coverImg.src = song.coverPath || 'assets/images/default-cover.jpg';
-        titleEl.textContent = song.title;
-        artistEl.textContent = song.artist;
-        await audio.play();
-        document.querySelector('.play-pause').classList.add('playing');
-    } catch (error) {
-        console.error('Erreur lors de la lecture de la chanson:', error);
-        alert('Impossible de lire la chanson. Vérifiez le lien ou le format du fichier.');
+function toggleMute() {
+    const audioPlayer = document.getElementById('audio-player');
+    if (audioPlayer) {
+        if (audioPlayer.volume > 0) {
+            audioPlayer.volume = 0;
+            setVolume(0);
+        } else {
+            setVolume(0.7);
+        }
     }
+}
+
+function updateQueue() {
+    const queueList = document.querySelector('.queue-list');
+    if (!queueList) return;
+
+    // Pour l'instant, afficher un message simple
+    queueList.innerHTML = `
+        <div class="queue-empty">
+            <p>Lecture en cours: ${currentSong?.title || 'Aucune chanson'}</p>
+        </div>
+    `;
 }
