@@ -132,18 +132,26 @@ export function initUpload() {
 
         // Envoyer la chanson à la fonction Netlify
         try {
+            console.log('Envoi des données à Netlify:', newSong);
+            
             const response = await fetch('https://peaceful-llama-d73d5f.netlify.app/.netlify/functions/update-songs', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ newSong })
             });
-            const result = await response.json();
+
+            console.log('Réponse reçue, status:', response.status);
 
             if (!response.ok) {
-                throw new Error(result.error || 'Erreur lors de l\'ajout de la chanson');
+                const errorText = await response.text();
+                console.error('Erreur de réponse:', errorText);
+                throw new Error(`Erreur HTTP ${response.status}: ${errorText}`);
             }
+
+            const result = await response.json();
+            console.log('Résultat:', result);
 
             // Ajouter la chanson à la liste locale pour un affichage immédiat
             songs.push(newSong);
@@ -161,6 +169,7 @@ export function initUpload() {
             // Réinitialiser le formulaire et fermer la modale
             uploadForm.reset();
             modalOverlay.classList.remove('show');
+
         } catch (error) {
             console.error('Erreur lors de l\'envoi à Netlify:', error);
             alert('Erreur lors de l\'ajout de la chanson: ' + error.message);
