@@ -195,6 +195,7 @@
     
     .track-card-cover {
         height: 80px; /* Réduit */
+        aspect-ratio: 1;
     }
     
     /* Player becomes bottom bar */
@@ -357,6 +358,7 @@
     
     .track-card-cover {
         height: 70px; /* Réduit */
+        aspect-ratio: 1;
     }
     
     .track-card-title {
@@ -434,6 +436,7 @@
     
     .track-card-cover {
         height: 60px; /* Réduit */
+        aspect-ratio: 1;
     }
     
     .track-card-title {
