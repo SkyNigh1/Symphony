@@ -13,14 +13,13 @@
     <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="logo-section">
-            <div class="logo"> <img src="assets/images/logo.png" alt=""> </div>
+            <div class="logo">S</div>
             <h1 class="brand-name">Symphony</h1>
         </div>
         <div class="search-section">
-            <input type="text" class="search-bar" placeholder="Rechercher un morceau, artiste ou album">
+            <input type="text" class="search-bar" placeholder="Rechercher des chansons, albums, artistes...">
             <button class="search-btn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"></circle>
@@ -29,97 +28,91 @@
             </button>
         </div>
         <div class="user-section">
-            <button class="upload-btn">
+            <button class="upload-btn" data-modal-target="upload-modal">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M12 5v14M5 12h14"></path>
                 </svg>
                 <span>Ajouter</span>
             </button>
             <div class="user-profile">
-                <img src="assets/images/default-avatar.png" alt="User Avatar" class="user-avatar">
+                <img src="https://via.placeholder.com/32" alt="User Avatar" class="user-avatar">
                 <span class="user-name">Utilisateur</span>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <div class="main-container flex">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <nav class="nav-menu">
-                <ul class="nav-list">
-                    <li class="nav-item active">
-                        <a href="#" class="nav-link">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"></path>
-                            </svg>
-                            Accueil
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4 4h16v16H4z"></path>
-                            </svg>
-                            Ma Bibliothèque
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
-                            </svg>
-                            Favoris
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                            </svg>
-                            Albums
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 14c3.87 0 7-2.24 7-5s-3.13-5-7-5-7 2.24-7 5 3.13 5 7 5zM12 17c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0 2c1.65 0 3.19.5 4.5 1.36"></path>
-                            </svg>
-                            Artistes
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-            <div class="content-area">
-                <div class="content-header">
-                    <h2 class="content-title">Récemment ajouté</h2>
-                </div>
-                <div class="content-grid">
-                    <div class="empty-state">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 9l3 3m0 0l3-3m-3 3v6"></path>
-                            <circle cx="12" cy="12" r="10"></circle>
+    <main class="main-container">
+        <nav class="nav-menu">
+            <ul class="nav-list">
+                <li class="nav-item active">
+                    <a href="#" class="nav-link">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"></path>
                         </svg>
-                        <h3>Aucune musique trouvée</h3>
-                        <p>Commencez par ajouter votre première chanson !</p>
-                    </div>
-                </div>
-            </div>
-        </aside>
+                        Accueil
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16v16H4z"></path>
+                            <path d="M9 8h6m-6 4h6m-6 4h6"></path>
+                        </svg>
+                        Ma Bibliothèque
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                        </svg>
+                        Favoris
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="2.5"></circle>
+                            <path d="M3 12h18"></path>
+                        </svg>
+                        Albums
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 16v-4l3 2-3 2z"></path>
+                        </svg>
+                        Artistes
+                    </a>
+                </li>
+            </ul>
+        </nav>
 
-        <!-- Player Panel -->
-        <div class="player-panel">
+        <section class="content-area">
+            <div class="content-header">
+                <h2 class="content-title">Récemment ajouté</h2>
+            </div>
+            <div class="empty-state">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 9l6 6m0-6l-6 6"></path>
+                    <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+                <h3>Aucune musique trouvée</h3>
+                <p>Commencez par ajouter votre première chanson !</p>
+            </div>
+        </section>
+
+        <aside class="player-panel">
             <div class="now-playing">
                 <div class="track-cover">
-                    <img src="assets/images/default-cover.jpg" alt="Cover" class="cover-image">
+                    <img src="https://via.placeholder.com/300" alt="Track Cover" class="cover-image">
                     <div class="play-overlay">
                         <button class="play-btn-large">
-                            <svg class="play-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                            </svg>
-                            <svg class="pause-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="6" y="4" width="4" height="16"></rect>
-                                <rect x="14" y="4" width="4" height="16"></rect>
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8 5v14l11-7z"></path>
                             </svg>
                         </button>
                     </div>
@@ -134,25 +127,35 @@
                     Votre navigateur ne supporte pas l'élément audio.
                 </audio>
                 <div class="control-buttons">
-                    <button class="control-btn prev-btn" title="Previous">
+                    <button class="control-btn shuffle-btn">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="19 20 9 12 19 4 19 20"></polygon>
-                            <line x1="5" y1="20" x2="5" y2="4"></line>
+                            <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M3 4l5 5"></path>
                         </svg>
                     </button>
-                    <button class="control-btn play-pause" title="Play/Pause">
-                        <svg class="play-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                        </svg>
-                        <svg class="pause-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="6" y="4" width="4" height="16"></rect>
-                            <rect x="14" y="4" width="4" height="16"></rect>
+                    <button class="control-btn prev-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"></path>
                         </svg>
                     </button>
-                    <button class="control-btn next-btn" title="Next">
+                    <button class="control-btn play-pause">
+                        <svg class="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 5v14l11-7z"></path>
+                        </svg>
+                        <svg class="pause-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>
+                        </svg>
+                    </button>
+                    <button class="control-btn next-btn">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="5 4 15 12 5 20 5 4"></polygon>
-                            <line x1="19" y1="4" x2="19" y2="20"></line>
+                            <path d="M5 12h14M12 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                    <button class="control-btn repeat-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 1l4 4-4 4"></path>
+                            <path d="M3 11v2a4 4 0 0 0 4 4h14"></path>
+                            <path d="M7 23l-4-4 4-4"></path>
+                            <path d="M21 13v-2a4 4 0 0 0-4-4H3"></path>
                         </svg>
                     </button>
                 </div>
@@ -165,12 +168,12 @@
                             </div>
                         </div>
                     </div>
-                    <span class="time total-time">0:00</span>
+                    <span class="time duration">0:00</span>
                 </div>
                 <div class="volume-section">
                     <button class="volume-btn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
                             <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                             <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
                         </svg>
@@ -192,11 +195,10 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </aside>
+    </main>
 
-    <!-- Upload Modal -->
-    <div class="modal-overlay">
+    <div class="modal-overlay" id="upload-modal">
         <div class="modal">
             <div class="modal-header">
                 <h3>Ajouter une nouvelle chanson</h3>
@@ -208,35 +210,35 @@
             </div>
             <div class="modal-body">
                 <form class="upload-form">
-                    <p class="form-subtext">
-                        Uploadez vos fichiers MP3 et couverture sur Google Drive, définissez le partage sur "Toute personne avec le lien", et entrez les liens ci-dessous au format <code>https://drive.google.com/uc?export=download&id=FILE_ID</code>.
+                    <p class="form-instructions">
+                        Uploadez vos fichiers MP3 et couverture sur Google Drive, définissez le partage sur "Toute personne avec le lien", et entrez les liens ci-dessous au format https://drive.google.com/uc?export=download&id=FILE_ID.
                     </p>
                     <div class="form-group">
                         <label for="mp3-link">Lien Google Drive MP3 *</label>
-                        <input type="text" id="mp3-link" name="mp3-link" placeholder="https://drive.google.com/uc?export=download&id=FILE_ID" required>
+                        <input type="text" id="mp3-link" required placeholder="https://drive.google.com/uc?export=download&id=...">
                     </div>
                     <div class="form-group">
                         <label for="cover-link">Lien Google Drive de la couverture (optionnel)</label>
-                        <input type="text" id="cover-link" name="cover-link" placeholder="https://drive.google.com/uc?export=download&id=FILE_ID">
+                        <input type="text" id="cover-link" placeholder="https://drive.google.com/uc?export=download&id=...">
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="title">Titre *</label>
-                            <input type="text" id="title" name="title" required>
+                            <label for="track-title">Titre *</label>
+                            <input type="text" id="track-title" required placeholder="Titre de la chanson">
                         </div>
                         <div class="form-group">
-                            <label for="artist">Artiste *</label>
-                            <input type="text" id="artist" name="artist" required>
+                            <label for="track-artist">Artiste *</label>
+                            <input type="text" id="track-artist" required placeholder="Nom de l'artiste">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="album">Album *</label>
-                            <input type="text" id="album" name="album" required>
+                            <label for="track-album">Album *</label>
+                            <input type="text" id="track-album" required placeholder="Nom de l'album">
                         </div>
                         <div class="form-group">
                             <label for="track-number">N° piste</label>
-                            <input type="number" id="track-number" name="track-number" min="1">
+                            <input type="number" id="track-number" placeholder="Numéro de piste">
                         </div>
                     </div>
                     <div class="form-actions">
@@ -247,7 +249,6 @@
             </div>
         </div>
     </div>
-
     <!-- Scripts -->
     <script type="module" src="js/app.js"></script>
     <script type="module" src="js/database.js"></script>

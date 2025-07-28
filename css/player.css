@@ -1,12 +1,13 @@
 /* Player Panel Styles */
 .player-panel {
-    width: 25%;
+    width: var(--player-width);
     background: var(--surface-color);
     border-left: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     height: calc(100vh - var(--header-height));
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 /* Now Playing Section */
@@ -493,7 +494,7 @@
 /* Responsive Adjustments */
 @media (max-width: 1200px) {
     .player-panel {
-        width: 30%;
+        width: var(--player-min-width);
     }
 }
 
