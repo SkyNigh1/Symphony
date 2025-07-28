@@ -1,0 +1,8 @@
+{
+  "name": "symphony",
+  "version": "1.0.0",
+  "description": "A music player application",
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  }
+}
