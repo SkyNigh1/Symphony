@@ -130,26 +130,42 @@ export function initUpload() {
             uploadedBy: 'user'
         };
 
-        // Ajouter la chanson à la liste globale
-        songs.push(newSong);
-        console.log('Nouvelle chanson ajoutée:', newSong);
+        // Envoyer la chanson à la fonction Netlify
+        try {
+            const response = await fetch('https://peaceful-llama-d73d5f.netlify.app/.netlify/functions/update-songs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ newSong })
+            });
+            const result = await response.json();
 
-        // Sauvegarder dans localStorage
-        const userSongs = songs.filter(song => song.uploadedBy === 'user');
-        localStorage.setItem('userSongs', JSON.stringify(userSongs));
-        console.log('Chansons utilisateur sauvegardées:', userSongs);
+            if (!response.ok) {
+                throw new Error(result.error || 'Erreur lors de l\'ajout de la chanson');
+            }
 
-        // Rafraîchir l'affichage
-        displayRecentSongs(songs);
-        
-        // Restaurer le bouton
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-        
-        alert('Chanson ajoutée avec succès !');
+            // Ajouter la chanson à la liste locale pour un affichage immédiat
+            songs.push(newSong);
+            console.log('Nouvelle chanson ajoutée:', newSong);
 
-        // Réinitialiser le formulaire et fermer la modale
-        uploadForm.reset();
-        modalOverlay.classList.remove('show');
+            // Rafraîchir l'affichage
+            displayRecentSongs(songs);
+
+            // Restaurer le bouton
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+            
+            alert('Chanson ajoutée avec succès !');
+
+            // Réinitialiser le formulaire et fermer la modale
+            uploadForm.reset();
+            modalOverlay.classList.remove('show');
+        } catch (error) {
+            console.error('Erreur lors de l\'envoi à Netlify:', error);
+            alert('Erreur lors de l\'ajout de la chanson: ' + error.message);
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
     });
 }

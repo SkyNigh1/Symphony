@@ -67,7 +67,6 @@ export function displayRecentSongs(songsToDisplay) {
         
         // Ajouter l'événement de clic pour jouer la chanson
         songCard.addEventListener('click', () => {
-            // Importer playSong dynamiquement pour éviter les imports circulaires
             import('./player.js').then(({ playSong }) => {
                 playSong(song);
             });
@@ -87,13 +86,12 @@ async function init() {
     try {
         console.log('Initialisation de l\'application...');
         
-        // Charger les chansons depuis le fichier JSON et localStorage
+        // Charger les chansons depuis le fichier JSON
         const jsonSongs = await loadSongs();
-        const userSongs = JSON.parse(localStorage.getItem('userSongs')) || [];
         
         // Fusionner les chansons
         songs.length = 0; // Vider le tableau
-        songs.push(...jsonSongs, ...userSongs);
+        songs.push(...jsonSongs);
         
         console.log('Chansons chargées:', songs);
         
