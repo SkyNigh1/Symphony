@@ -166,7 +166,7 @@
     white-space: nowrap;
 }
 
-/* Bouton favori dans les cartes */
+/* Bouton favori dans les cartes - CORRECTION */
 .track-card-actions {
     display: flex;
     justify-content: flex-end;
@@ -176,6 +176,7 @@
     right: 0.5rem;
     opacity: 0;
     transition: opacity 0.3s ease;
+    z-index: 10; /* Assure que le bouton reste au-dessus */
 }
 
 .track-card:hover .track-card-actions {
@@ -197,20 +198,31 @@
     backdrop-filter: blur(10px);
 }
 
+/* État normal : hover du bouton */
 .favorite-btn:hover {
     background: rgba(255, 255, 255, 1);
     color: var(--accent-color);
     transform: scale(1.1);
 }
 
+/* État actif (en favoris) */
 .favorite-btn.active {
     color: var(--accent-color);
     background: rgba(255, 255, 255, 1);
 }
 
+/* État actif + hover : garde le cœur visible */
+.favorite-btn.active:hover {
+    color: var(--accent-color);
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+}
+
+/* Assure que le SVG reste visible */
 .favorite-btn svg {
     width: 14px; /* Taille réduite */
     height: 14px;
+    pointer-events: none; /* Évite les conflits d'événements */
 }
 
 /* Album Cards - Taille réduite */
