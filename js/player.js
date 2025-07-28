@@ -4,7 +4,7 @@ let currentSong = null;
 let isPlaying = false;
 let currentTime = 0;
 let duration = 0;
-let volume = 1;
+let volume = 0.7; // Valeur par défaut visible
 
 export function initPlayer() {
     const audioPlayer = document.getElementById('audio-player');
@@ -41,14 +41,16 @@ export function initPlayer() {
         if (duration > 0) {
             const progress = (currentTime / duration) * 100;
             progressFill.style.width = `${progress}%`;
-            progressHandle.style.left = `${progress}%`;
+            // Correction du positionnement du handle
+            if (progressHandle) {
+                progressHandle.style.right = `${-7}px`; // Position fixe correcte
+            }
         }
     });
 
     audioPlayer.addEventListener('ended', () => {
         isPlaying = false;
         updatePlayPauseButton();
-        // Auto-play next song si disponible
         playNext();
     });
 
@@ -64,27 +66,70 @@ export function initPlayer() {
     prevBtn.addEventListener('click', playPrevious);
     nextBtn.addEventListener('click', playNext);
 
-    // Barre de progression
-    progressBar.addEventListener('click', (e) => {
-        if (duration > 0) {
-            const rect = progressBar.getBoundingClientRect();
-            const percent = (e.clientX - rect.left) / rect.width;
-            const newTime = percent * duration;
-            audioPlayer.currentTime = newTime;
+    // Barre de progression avec gestion améliorée
+    let isDraggingProgress = false;
+    
+    progressBar.addEventListener('mousedown', (e) => {
+        isDraggingProgress = true;
+        updateProgress(e);
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDraggingProgress) {
+            updateProgress(e);
         }
     });
 
-    // Contrôle du volume
-    volumeSlider.addEventListener('click', (e) => {
-        const rect = volumeSlider.getBoundingClientRect();
-        const percent = (e.clientX - rect.left) / rect.width;
-        setVolume(percent);
+    document.addEventListener('mouseup', () => {
+        isDraggingProgress = false;
     });
+
+    progressBar.addEventListener('click', updateProgress);
+
+    function updateProgress(e) {
+        if (duration > 0) {
+            const rect = progressBar.getBoundingClientRect();
+            const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+            const newTime = percent * duration;
+            audioPlayer.currentTime = newTime;
+            
+            // Mise à jour immédiate de l'affichage
+            const progress = percent * 100;
+            progressFill.style.width = `${progress}%`;
+            currentTimeEl.textContent = formatTime(newTime);
+        }
+    }
+
+    // Contrôle du volume avec gestion améliorée
+    let isDraggingVolume = false;
+
+    volumeSlider.addEventListener('mousedown', (e) => {
+        isDraggingVolume = true;
+        updateVolume(e);
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDraggingVolume) {
+            updateVolume(e);
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDraggingVolume = false;
+    });
+
+    volumeSlider.addEventListener('click', updateVolume);
+
+    function updateVolume(e) {
+        const rect = volumeSlider.getBoundingClientRect();
+        const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        setVolume(percent);
+    }
 
     volumeBtn.addEventListener('click', toggleMute);
 
     // Initialiser le volume
-    setVolume(0.7);
+    setVolume(volume);
 }
 
 export function playSong(song) {
@@ -105,8 +150,17 @@ export function playSong(song) {
     if (trackTitle) trackTitle.textContent = song.title;
     if (trackArtist) trackArtist.textContent = song.artist;
     if (coverImage) {
-        coverImage.src = song.coverPath || 'assets/images/default-cover.jpg';
+        const coverSrc = song.coverPath || 'assets/images/default-cover.jpg';
+        coverImage.src = coverSrc;
         coverImage.alt = song.title;
+        
+        // Extraire la couleur dominante et appliquer le dégradé
+        extractDominantColor(coverSrc).then(color => {
+            applyDynamicGradient(color);
+        }).catch(() => {
+            // Fallback vers les couleurs par défaut
+            applyDynamicGradient('#6366f1');
+        });
     }
 
     // Charger et jouer l'audio
@@ -125,8 +179,83 @@ export function playSong(song) {
         }, { once: true });
     }
 
-    // Mettre à jour la queue
     updateQueue();
+}
+
+// Fonction pour extraire la couleur dominante d'une image
+function extractDominantColor(imageSrc) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        
+        img.onload = function() {
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                canvas.width = img.width;
+                canvas.height = img.height;
+                
+                ctx.drawImage(img, 0, 0);
+                
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const pixels = imageData.data;
+                
+                // Compter les couleurs
+                const colorCount = {};
+                for (let i = 0; i < pixels.length; i += 16) { // Échantillonnage
+                    const r = pixels[i];
+                    const g = pixels[i + 1];
+                    const b = pixels[i + 2];
+                    const alpha = pixels[i + 3];
+                    
+                    if (alpha > 128) { // Ignorer les pixels transparents
+                        const color = `${Math.floor(r/32)*32},${Math.floor(g/32)*32},${Math.floor(b/32)*32}`;
+                        colorCount[color] = (colorCount[color] || 0) + 1;
+                    }
+                }
+                
+                // Trouver la couleur la plus fréquente
+                let maxCount = 0;
+                let dominantColor = '100,100,100';
+                
+                for (const color in colorCount) {
+                    if (colorCount[color] > maxCount) {
+                        maxCount = colorCount[color];
+                        dominantColor = color;
+                    }
+                }
+                
+                const [r, g, b] = dominantColor.split(',').map(Number);
+                const hexColor = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+                
+                resolve(hexColor);
+            } catch (error) {
+                reject(error);
+            }
+        };
+        
+        img.onerror = () => reject(new Error('Impossible de charger l\'image'));
+        img.src = imageSrc;
+    });
+}
+
+// Fonction pour appliquer un dégradé dynamique basé sur la couleur
+function applyDynamicGradient(baseColor) {
+    const nowPlaying = document.querySelector('.now-playing');
+    if (!nowPlaying) return;
+    
+    // Convertir la couleur hex en RGB
+    const r = parseInt(baseColor.slice(1, 3), 16);
+    const g = parseInt(baseColor.slice(3, 5), 16);
+    const b = parseInt(baseColor.slice(5, 7), 16);
+    
+    // Créer des variations plus sombres et plus claires
+    const darkerColor = `rgb(${Math.max(0, r - 40)}, ${Math.max(0, g - 40)}, ${Math.max(0, b - 40)})`;
+    const lighterColor = `rgb(${Math.min(255, r + 20)}, ${Math.min(255, g + 20)}, ${Math.min(255, b + 20)})`;
+    
+    // Appliquer le dégradé
+    nowPlaying.style.background = `linear-gradient(135deg, ${lighterColor}, ${darkerColor})`;
 }
 
 function togglePlayPause() {
@@ -152,8 +281,17 @@ function togglePlayPause() {
 }
 
 function updatePlayPauseButton() {
+    const playPauseBtn = document.querySelector('.play-pause');
     const playIcon = document.querySelector('.play-icon');
     const pauseIcon = document.querySelector('.pause-icon');
+    
+    if (playPauseBtn) {
+        if (isPlaying) {
+            playPauseBtn.classList.add('playing');
+        } else {
+            playPauseBtn.classList.remove('playing');
+        }
+    }
     
     if (playIcon && pauseIcon) {
         if (isPlaying) {
@@ -169,7 +307,6 @@ function updatePlayPauseButton() {
 function playNext() {
     if (!currentSong) return;
     
-    // Import dynamique pour éviter les dépendances circulaires
     import('./app.js').then(({ songs }) => {
         const currentIndex = songs.findIndex(song => song.id === currentSong.id);
         const nextIndex = (currentIndex + 1) % songs.length;
@@ -204,18 +341,20 @@ function setVolume(vol) {
     if (volumeFill && volumeHandle) {
         const percent = volume * 100;
         volumeFill.style.width = `${percent}%`;
-        volumeHandle.style.left = `${percent}%`;
+        // Correction du positionnement du handle de volume
+        volumeHandle.style.right = '-6px'; // Position fixe correcte
     }
 }
 
 function toggleMute() {
     const audioPlayer = document.getElementById('audio-player');
+    const previousVolume = volume;
+    
     if (audioPlayer) {
-        if (audioPlayer.volume > 0) {
-            audioPlayer.volume = 0;
+        if (volume > 0) {
             setVolume(0);
         } else {
-            setVolume(0.7);
+            setVolume(previousVolume > 0 ? previousVolume : 0.7);
         }
     }
 }

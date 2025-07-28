@@ -14,10 +14,10 @@
     --text-disabled: #404040;
     
     /* Couleurs d'accent */
-    --accent-primary: #1db954;
-    --accent-secondary: #1ed760;
-    --accent-hover: #1aa34a;
-    --accent-active: #169c46;
+    --accent-primary: #8c45ff;
+    --accent-secondary: #8c45ff7d;
+    --accent-hover: #7829f7af;
+    --accent-active: #6522cf7d;
     
     /* Couleurs d'état */
     --error: #e22134;
