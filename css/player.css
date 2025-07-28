@@ -36,49 +36,8 @@
     transition: transform 0.3s ease;
 }
 
-.play-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    cursor: pointer;
-}
-
-.track-cover:hover .play-overlay {
-    opacity: 1;
-}
-
 .track-cover:hover .cover-image {
     transform: scale(1.05);
-}
-
-.play-btn-large {
-    background: var(--accent-primary);
-    border: none;
-    border-radius: 50%;
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    transform: scale(0.8);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.play-overlay:hover .play-btn-large {
-    background: var(--accent-secondary);
-    transform: scale(1);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
 .track-info {
