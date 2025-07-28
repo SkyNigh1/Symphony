@@ -4,7 +4,7 @@ let currentSong = null;
 let isPlaying = false;
 let currentTime = 0;
 let duration = 0;
-let volume = 0.7; // Valeur par défaut visible
+let volume = 0.7;
 
 export function initPlayer() {
     const audioPlayer = document.getElementById('audio-player');
@@ -41,9 +41,8 @@ export function initPlayer() {
         if (duration > 0) {
             const progress = (currentTime / duration) * 100;
             progressFill.style.width = `${progress}%`;
-            // Correction du positionnement du handle
             if (progressHandle) {
-                progressHandle.style.right = `${-7}px`; // Position fixe correcte
+                progressHandle.style.right = `${-7}px`;
             }
         }
     });
@@ -69,14 +68,11 @@ export function initPlayer() {
         alert('Erreur lors de la lecture du fichier audio');
     });
 
-    // Bouton play/pause
     playPauseBtn.addEventListener('click', togglePlayPause);
-
-    // Boutons précédent/suivant
     prevBtn.addEventListener('click', playPrevious);
     nextBtn.addEventListener('click', playNext);
 
-    // Barre de progression avec gestion améliorée
+    // Gestion de la barre de progression
     let isDraggingProgress = false;
     
     progressBar.addEventListener('mousedown', (e) => {
@@ -103,14 +99,13 @@ export function initPlayer() {
             const newTime = percent * duration;
             audioPlayer.currentTime = newTime;
             
-            // Mise à jour immédiate de l'affichage
             const progress = percent * 100;
             progressFill.style.width = `${progress}%`;
             currentTimeEl.textContent = formatTime(newTime);
         }
     }
 
-    // Contrôle du volume avec gestion améliorée
+    // Gestion du volume
     let isDraggingVolume = false;
 
     volumeSlider.addEventListener('mousedown', (e) => {
@@ -137,8 +132,6 @@ export function initPlayer() {
     }
 
     volumeBtn.addEventListener('click', toggleMute);
-
-    // Initialiser le volume
     setVolume(volume);
 }
 
@@ -165,17 +158,16 @@ export function playSong(song) {
         coverImage.src = coverSrc;
         coverImage.alt = song.title;
         
-        // Extraire la couleur dominante et appliquer le dégradé
+        // Extraire les couleurs et appliquer le dégradé
         console.log('Début extraction couleur...');
-        extractDominantColor(coverSrc).then(color => {
-            console.log('Couleur extraite avec succès:', color);
-            applyDynamicGradient(color);
+        extractHarmoniousColors(coverSrc).then(colors => {
+            console.log('Couleurs extraites avec succès:', colors);
+            applyHarmoniousGradient(colors);
         }).catch(error => {
             console.log('Erreur extraction couleur:', error);
-            // Fallback vers une couleur générée depuis le titre
-            const fallbackColor = generateColorFromText(song.title + song.artist);
-            console.log('Utilisation couleur fallback:', fallbackColor);
-            applyDynamicGradient(fallbackColor);
+            const fallbackColors = generateHarmoniousColorsFromText(song.title + song.artist);
+            console.log('Utilisation couleurs fallback:', fallbackColors);
+            applyHarmoniousGradient(fallbackColors);
         });
     }
 
@@ -198,19 +190,17 @@ export function playSong(song) {
     updateQueue();
 }
 
-// Fonction pour extraire la couleur dominante d'une image
-function extractDominantColor(imageSrc) {
+// Fonction améliorée pour extraire des couleurs harmonieuses
+function extractHarmoniousColors(imageSrc) {
     return new Promise((resolve, reject) => {
         const img = new Image();
         
-        // Essayer sans crossOrigin d'abord
         img.onload = function() {
             try {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 
-                // Réduire la taille pour améliorer les performances
-                const size = 100;
+                const size = 150;
                 canvas.width = size;
                 canvas.height = size;
                 
@@ -219,128 +209,391 @@ function extractDominantColor(imageSrc) {
                 const imageData = ctx.getImageData(0, 0, size, size);
                 const pixels = imageData.data;
                 
-                // Compter les couleurs avec un échantillonnage plus large
-                const colorCount = {};
-                for (let i = 0; i < pixels.length; i += 20) { // Échantillonnage plus large
-                    const r = pixels[i];
-                    const g = pixels[i + 1];
-                    const b = pixels[i + 2];
-                    const alpha = pixels[i + 3];
-                    
-                    if (alpha > 128) { // Ignorer les pixels transparents
-                        // Regrouper les couleurs similaires
-                        const rBucket = Math.floor(r / 51) * 51; // 0, 51, 102, 153, 204, 255
-                        const gBucket = Math.floor(g / 51) * 51;
-                        const bBucket = Math.floor(b / 51) * 51;
+                // Extraire plusieurs couleurs principales
+                const colorData = [];
+                
+                // Échantillonnage en grille pour une meilleure représentation
+                for (let y = 0; y < size; y += 10) {
+                    for (let x = 0; x < size; x += 10) {
+                        const i = (y * size + x) * 4;
+                        const r = pixels[i];
+                        const g = pixels[i + 1];
+                        const b = pixels[i + 2];
+                        const alpha = pixels[i + 3];
                         
-                        const color = `${rBucket},${gBucket},${bBucket}`;
-                        colorCount[color] = (colorCount[color] || 0) + 1;
+                        if (alpha > 200) { // Ignorer les pixels transparents
+                            const brightness = (r + g + b) / 3;
+                            const saturation = getSaturation(r, g, b);
+                            
+                            // Éviter les couleurs trop extrêmes
+                            if (brightness > 15 && brightness < 240 && saturation > 0.1) {
+                                colorData.push({ r, g, b, brightness, saturation });
+                            }
+                        }
                     }
                 }
                 
-                // Trouver la couleur la plus fréquente (en évitant le noir et le blanc)
-                let maxCount = 0;
-                let dominantColor = '100,100,200'; // Couleur par défaut
-                
-                for (const color in colorCount) {
-                    const [r, g, b] = color.split(',').map(Number);
-                    
-                    // Éviter les couleurs trop sombres ou trop claires
-                    const brightness = (r + g + b) / 3;
-                    if (brightness > 30 && brightness < 200 && colorCount[color] > maxCount) {
-                        maxCount = colorCount[color];
-                        dominantColor = color;
-                    }
+                if (colorData.length === 0) {
+                    throw new Error('Aucune couleur valide trouvée');
                 }
                 
-                const [r, g, b] = dominantColor.split(',').map(Number);
-                const hexColor = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+                // Grouper les couleurs par similarité et luminosité
+                const colorGroups = groupSimilarColors(colorData);
                 
-                console.log('Couleur dominante extraite:', hexColor);
-                resolve(hexColor);
+                // Sélectionner les couleurs les plus représentatives
+                const dominantColors = selectDominantColors(colorGroups);
+                
+                // Créer une palette harmonieuse
+                const palette = createHarmoniousPalette(dominantColors);
+                
+                console.log('Palette créée:', palette);
+                resolve(palette);
+                
             } catch (error) {
-                console.log('Erreur canvas, utilisation de couleur par défaut:', error);
-                // Utiliser une couleur basée sur le nom de la chanson/artiste comme fallback
-                const fallbackColor = generateColorFromText(currentSong?.title || 'default');
-                resolve(fallbackColor);
+                console.log('Erreur canvas:', error);
+                reject(error);
             }
         };
         
         img.onerror = () => {
-            console.log('Erreur de chargement image, utilisation de couleur par défaut');
-            const fallbackColor = generateColorFromText(currentSong?.title || 'default');
-            resolve(fallbackColor);
+            console.log('Erreur de chargement image');
+            reject(new Error('Image loading failed'));
         };
         
-        // Essayer de charger l'image
         img.src = imageSrc;
         
-        // Timeout de sécurité
         setTimeout(() => {
             if (!img.complete) {
-                console.log('Timeout image, utilisation de couleur par défaut');
-                const fallbackColor = generateColorFromText(currentSong?.title || 'default');
-                resolve(fallbackColor);
+                reject(new Error('Image loading timeout'));
             }
         }, 3000);
     });
 }
 
-// Fonction de fallback pour générer une couleur basée sur du texte
-function generateColorFromText(text) {
+// Calculer la saturation d'une couleur RGB
+function getSaturation(r, g, b) {
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const delta = max - min;
+    
+    if (max === 0) return 0;
+    return delta / max;
+}
+
+// Grouper les couleurs similaires
+function groupSimilarColors(colorData) {
+    const groups = [];
+    const threshold = 40; // Seuil de similarité
+    
+    colorData.forEach(color => {
+        let foundGroup = false;
+        
+        for (let group of groups) {
+            const avgColor = group.average;
+            const distance = Math.sqrt(
+                Math.pow(color.r - avgColor.r, 2) +
+                Math.pow(color.g - avgColor.g, 2) +
+                Math.pow(color.b - avgColor.b, 2)
+            );
+            
+            if (distance < threshold) {
+                group.colors.push(color);
+                // Recalculer la moyenne
+                const sum = group.colors.reduce((acc, c) => ({
+                    r: acc.r + c.r,
+                    g: acc.g + c.g,
+                    b: acc.b + c.b
+                }), { r: 0, g: 0, b: 0 });
+                
+                group.average = {
+                    r: Math.round(sum.r / group.colors.length),
+                    g: Math.round(sum.g / group.colors.length),
+                    b: Math.round(sum.b / group.colors.length)
+                };
+                foundGroup = true;
+                break;
+            }
+        }
+        
+        if (!foundGroup) {
+            groups.push({
+                colors: [color],
+                average: { r: color.r, g: color.g, b: color.b }
+            });
+        }
+    });
+    
+    return groups;
+}
+
+// Sélectionner les couleurs dominantes
+function selectDominantColors(colorGroups) {
+    // Trier par nombre de couleurs dans le groupe
+    colorGroups.sort((a, b) => b.colors.length - a.colors.length);
+    
+    // Prendre les 3-5 groupes les plus importants
+    const topGroups = colorGroups.slice(0, Math.min(5, colorGroups.length));
+    
+    return topGroups.map(group => {
+        const avg = group.average;
+        return {
+            r: avg.r,
+            g: avg.g,
+            b: avg.b,
+            weight: group.colors.length,
+            brightness: (avg.r + avg.g + avg.b) / 3
+        };
+    });
+}
+
+// Créer une palette harmonieuse
+function createHarmoniousPalette(dominantColors) {
+    if (dominantColors.length === 0) {
+        return generateHarmoniousColorsFromText('default');
+    }
+    
+    // Trier par poids (importance) et luminosité
+    dominantColors.sort((a, b) => b.weight - a.weight);
+    
+    const primary = dominantColors[0];
+    
+    // Créer des variations harmonieuses de la couleur principale
+    const palette = {
+        primary: rgbToHex(primary.r, primary.g, primary.b),
+        light: rgbToHex(
+            Math.min(255, Math.round(primary.r * 1.3 + 40)),
+            Math.min(255, Math.round(primary.g * 1.3 + 40)),
+            Math.min(255, Math.round(primary.b * 1.3 + 40))
+        ),
+        dark: rgbToHex(
+            Math.max(0, Math.round(primary.r * 0.6 - 20)),
+            Math.max(0, Math.round(primary.g * 0.6 - 20)),
+            Math.max(0, Math.round(primary.b * 0.6 - 20))
+        ),
+        accent: dominantColors.length > 1 ? 
+            rgbToHex(dominantColors[1].r, dominantColors[1].g, dominantColors[1].b) :
+            createComplementaryColor(primary.r, primary.g, primary.b)
+    };
+    
+    // Ajuster la saturation et la luminosité pour un meilleur rendu
+    return adjustPaletteForBackground(palette);
+}
+
+// Créer une couleur complémentaire
+function createComplementaryColor(r, g, b) {
+    // Convertir en HSL
+    const hsl = rgbToHsl(r, g, b);
+    
+    // Décaler la teinte de 180° pour obtenir la complémentaire
+    const complementaryHue = (hsl.h + 180) % 360;
+    
+    // Ajuster la saturation et la luminosité
+    const adjustedHsl = {
+        h: complementaryHue,
+        s: Math.min(70, hsl.s * 0.8), // Réduire un peu la saturation
+        l: Math.max(30, Math.min(70, hsl.l)) // Ajuster la luminosité
+    };
+    
+    const rgb = hslToRgb(adjustedHsl.h, adjustedHsl.s, adjustedHsl.l);
+    return rgbToHex(rgb.r, rgb.g, rgb.b);
+}
+
+// Ajuster la palette pour un meilleur rendu en arrière-plan
+function adjustPaletteForBackground(palette) {
+    // Convertir toutes les couleurs en HSL pour les ajuster
+    const colors = {};
+    
+    Object.keys(palette).forEach(key => {
+        const hex = palette[key];
+        const rgb = hexToRgb(hex);
+        const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+        
+        // Ajustements pour un meilleur rendu en arrière-plan
+        let adjustedHsl = { ...hsl };
+        
+        switch (key) {
+            case 'light':
+                adjustedHsl.l = Math.max(60, Math.min(85, hsl.l + 20));
+                adjustedHsl.s = Math.max(20, hsl.s * 0.7);
+                break;
+            case 'dark':
+                adjustedHsl.l = Math.max(15, Math.min(40, hsl.l - 15));
+                adjustedHsl.s = Math.max(30, hsl.s * 0.8);
+                break;
+            case 'primary':
+                adjustedHsl.l = Math.max(35, Math.min(65, hsl.l));
+                adjustedHsl.s = Math.max(25, Math.min(75, hsl.s));
+                break;
+            case 'accent':
+                adjustedHsl.l = Math.max(30, Math.min(60, hsl.l));
+                adjustedHsl.s = Math.max(30, Math.min(80, hsl.s));
+                break;
+        }
+        
+        const adjustedRgb = hslToRgb(adjustedHsl.h, adjustedHsl.s, adjustedHsl.l);
+        colors[key] = rgbToHex(adjustedRgb.r, adjustedRgb.g, adjustedRgb.b);
+    });
+    
+    return colors;
+}
+
+// Fonction de fallback pour générer des couleurs harmonieuses depuis du texte
+function generateHarmoniousColorsFromText(text) {
     let hash = 0;
     for (let i = 0; i < text.length; i++) {
         hash = text.charCodeAt(i) + ((hash << 5) - hash);
     }
     
-    // Générer des couleurs vives mais pas trop saturées
     const hue = Math.abs(hash) % 360;
-    const saturation = 60 + (Math.abs(hash) % 30); // Entre 60% et 90%
-    const lightness = 45 + (Math.abs(hash) % 20); // Entre 45% et 65%
-    
-    return hslToHex(hue, saturation, lightness);
-}
-
-// Convertir HSL en hexadécimal
-function hslToHex(h, s, l) {
-    l /= 100;
-    const a = s * Math.min(l, 1 - l) / 100;
-    const f = n => {
-        const k = (n + h / 30) % 12;
-        const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-        return Math.round(255 * color).toString(16).padStart(2, '0');
+    const baseHsl = {
+        h: hue,
+        s: 50 + (Math.abs(hash) % 25), // 50-75%
+        l: 45 + (Math.abs(hash) % 20)  // 45-65%
     };
-    return `#${f(0)}${f(8)}${f(4)}`;
+    
+    const baseRgb = hslToRgb(baseHsl.h, baseHsl.s, baseHsl.l);
+    
+    return {
+        primary: rgbToHex(baseRgb.r, baseRgb.g, baseRgb.b),
+        light: hslToHex(baseHsl.h, baseHsl.s * 0.7, Math.min(80, baseHsl.l + 25)),
+        dark: hslToHex(baseHsl.h, baseHsl.s * 0.9, Math.max(25, baseHsl.l - 20)),
+        accent: hslToHex((baseHsl.h + 30) % 360, baseHsl.s * 0.8, baseHsl.l)
+    };
 }
 
-// Fonction pour appliquer un dégradé dynamique basé sur la couleur
-function applyDynamicGradient(baseColor) {
+// Appliquer le dégradé harmonieux
+function applyHarmoniousGradient(colors) {
     const nowPlaying = document.querySelector('.now-playing');
     if (!nowPlaying) return;
     
-    console.log('Application du dégradé avec la couleur:', baseColor);
+    console.log('Application du dégradé harmonieux avec les couleurs:', colors);
     
-    // Convertir la couleur hex en RGB
-    const r = parseInt(baseColor.slice(1, 3), 16);
-    const g = parseInt(baseColor.slice(3, 5), 16);
-    const b = parseInt(baseColor.slice(5, 7), 16);
+    // Créer un dégradé complexe et élégant
+    const gradient = `
+        linear-gradient(135deg, 
+            ${colors.light} 0%, 
+            ${colors.primary} 40%, 
+            ${colors.dark} 85%, 
+            ${colors.accent} 100%
+        )
+    `;
     
-    // Créer des variations plus intéressantes
-    const darkerColor = `rgb(${Math.max(0, r - 60)}, ${Math.max(0, g - 60)}, ${Math.max(0, b - 60)})`;
-    const lighterColor = `rgb(${Math.min(255, r + 40)}, ${Math.min(255, g + 40)}, ${Math.min(255, b + 40)})`;
-    const accentColor = `rgb(${Math.min(255, r + 20)}, ${Math.min(255, g + 20)}, ${Math.min(255, b + 20)})`;
-    
-    // Appliquer un dégradé plus complexe et attractif
-    const gradient = `linear-gradient(135deg, ${lighterColor} 0%, ${baseColor} 50%, ${darkerColor} 100%)`;
     nowPlaying.style.background = gradient;
+    nowPlaying.style.transition = 'background 1s ease-in-out';
     
-    // Ajouter une animation subtile lors du changement
-    nowPlaying.style.transition = 'background 0.8s ease-in-out';
+    // Ajouter un overlay subtil pour améliorer la lisibilité du texte
+    nowPlaying.style.position = 'relative';
     
-    // Optionnel : changer aussi la couleur des accents
-    document.documentElement.style.setProperty('--dynamic-accent', baseColor);
+    // Créer ou mettre à jour l'overlay
+    let overlay = nowPlaying.querySelector('.gradient-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'gradient-overlay';
+        overlay.style.cssText = `
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(0,0,0,0.1) 0%, 
+                rgba(0,0,0,0.05) 50%, 
+                rgba(0,0,0,0.15) 100%
+            );
+            pointer-events: none;
+            border-radius: inherit;
+        `;
+        nowPlaying.appendChild(overlay);
+    }
+    
+    // Mettre à jour les variables CSS pour d'autres éléments si nécessaire
+    document.documentElement.style.setProperty('--dynamic-primary', colors.primary);
+    document.documentElement.style.setProperty('--dynamic-accent', colors.accent);
 }
 
+// Fonctions utilitaires de conversion de couleurs
+function rgbToHex(r, g, b) {
+    return `#${Math.round(r).toString(16).padStart(2, '0')}${Math.round(g).toString(16).padStart(2, '0')}${Math.round(b).toString(16).padStart(2, '0')}`;
+}
+
+function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+function rgbToHsl(r, g, b) {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+    
+    if (max === min) {
+        h = s = 0;
+    } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        
+        switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+    
+    return {
+        h: Math.round(h * 360),
+        s: Math.round(s * 100),
+        l: Math.round(l * 100)
+    };
+}
+
+function hslToRgb(h, s, l) {
+    h /= 360;
+    s /= 100;
+    l /= 100;
+    
+    const hue2rgb = (p, q, t) => {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1/6) return p + (q - p) * 6 * t;
+        if (t < 1/2) return q;
+        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        return p;
+    };
+    
+    let r, g, b;
+    
+    if (s === 0) {
+        r = g = b = l;
+    } else {
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+    }
+    
+    return {
+        r: Math.round(r * 255),
+        g: Math.round(g * 255),
+        b: Math.round(b * 255)
+    };
+}
+
+function hslToHex(h, s, l) {
+    const rgb = hslToRgb(h, s, l);
+    return rgbToHex(rgb.r, rgb.g, rgb.b);
+}
+
+// Reste des fonctions (inchangées)
 function togglePlayPause() {
     const audioPlayer = document.getElementById('audio-player');
     
@@ -375,8 +628,6 @@ function updatePlayPauseButton() {
             playPauseBtn.classList.remove('playing');
         }
     }
-    
-    // Ne pas modifier directement le style display - laisser le CSS s'en charger via la classe .playing
 }
 
 function playNext() {
@@ -416,8 +667,7 @@ function setVolume(vol) {
     if (volumeFill && volumeHandle) {
         const percent = volume * 100;
         volumeFill.style.width = `${percent}%`;
-        // Correction du positionnement du handle de volume
-        volumeHandle.style.right = '-6px'; // Position fixe correcte
+        volumeHandle.style.right = '-6px';
     }
 }
 
@@ -438,7 +688,6 @@ function updateQueue() {
     const queueList = document.querySelector('.queue-list');
     if (!queueList) return;
 
-    // Pour l'instant, afficher un message simple
     queueList.innerHTML = `
         <div class="queue-empty">
             <p>Lecture en cours: ${currentSong?.title || 'Aucune chanson'}</p>
