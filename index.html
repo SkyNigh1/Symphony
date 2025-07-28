@@ -108,14 +108,18 @@
         </aside>
 
         <!-- Player Panel -->
-        <aside class="player-panel">
+        <div class="player-panel">
             <div class="now-playing">
                 <div class="track-cover">
-                    <img src="assets/images/default-cover.jpg" alt="Track Cover" class="cover-image">
+                    <img src="assets/images/default-cover.jpg" alt="Cover" class="cover-image">
                     <div class="play-overlay">
                         <button class="play-btn-large">
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg class="play-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                            <svg class="pause-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="6" y="4" width="4" height="16"></rect>
+                                <rect x="14" y="4" width="4" height="16"></rect>
                             </svg>
                         </button>
                     </div>
@@ -126,28 +130,29 @@
                 </div>
             </div>
             <div class="player-controls">
-                <audio id="audio-player" controls>
-                    <source src="" type="audio/mpeg">
+                <audio id="audio-player" src="">
                     Votre navigateur ne supporte pas l'élément audio.
                 </audio>
                 <div class="control-buttons">
-                    <button class="control-btn">
+                    <button class="control-btn prev-btn" title="Previous">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 12H3m0 0l6-6m-6 6l6 6"></path>
+                            <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                            <line x1="5" y1="20" x2="5" y2="4"></line>
                         </svg>
                     </button>
-                    <button class="control-btn play-pause">
-                        <svg class="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <button class="control-btn play-pause" title="Play/Pause">
+                        <svg class="play-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polygon points="5 3 19 12 5 21 5 3"></polygon>
                         </svg>
-                        <svg class="pause-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg class="pause-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="6" y="4" width="4" height="16"></rect>
                             <rect x="14" y="4" width="4" height="16"></rect>
                         </svg>
                     </button>
-                    <button class="control-btn">
+                    <button class="control-btn next-btn" title="Next">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 12h18m0 0l-6-6m6 6l-6 6"></path>
+                            <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                            <line x1="19" y1="4" x2="19" y2="20"></line>
                         </svg>
                     </button>
                 </div>
@@ -165,8 +170,9 @@
                 <div class="volume-section">
                     <button class="volume-btn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
-                            <path d="M15.54 8.46a5 5 0 0 1 0 7.08"></path>
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
                         </svg>
                     </button>
                     <div class="volume-slider">
@@ -186,7 +192,7 @@
                     </div>
                 </div>
             </div>
-        </aside>
+        </div>
     </div>
 
     <!-- Upload Modal -->
