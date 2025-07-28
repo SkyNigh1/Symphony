@@ -15,31 +15,22 @@ async function initApp() {
         songs = [...songs, ...userSongs];
         console.log('Chansons chargées:', songs);
 
-        // Verify DOM is loaded
-        if (!document.querySelector('.content-grid')) {
-            console.error('content-grid element not found in DOM');
-            return;
-        }
-
         initPlayer();
         initUpload();
         initSearch();
         initNavigation();
         initFavorites();
         displayRecentSongs(songs);
-        updateAllFavoriteButtons();
+        updateAllFavoriteButtons(); // Add this to initialize favorite buttons
     } catch (error) {
         console.error('Erreur lors de l’initialisation:', error);
     }
 }
 
+// Afficher les chansons récentes
 function displayRecentSongs(songs) {
     const contentGrid = document.querySelector('.content-grid');
-    if (!contentGrid) {
-        console.error('content-grid element not found');
-        return;
-    }
-    contentGrid.innerHTML = '';
+    contentGrid.innerHTML = ''; // Vider la grille
 
     if (songs.length === 0) {
         contentGrid.innerHTML = `
@@ -58,7 +49,7 @@ function displayRecentSongs(songs) {
     songs.forEach(song => {
         const songCard = document.createElement('div');
         songCard.className = 'track-card';
-        songCard.dataset.songId = song.id;
+        songCard.dataset.songId = song.id; // Ajouter l'ID pour les favoris
         songCard.innerHTML = `
             <div class="track-card-cover">
                 <img src="${song.coverPath || 'assets/images/default-cover.jpg'}" alt="${song.title}">
@@ -84,9 +75,7 @@ function displayRecentSongs(songs) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM fully loaded, initializing app');
-    initApp();
-});
+// Lancer l’application
+document.addEventListener('DOMContentLoaded', initApp);
 
 export { songs, currentSong, displayRecentSongs };
