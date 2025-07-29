@@ -94,5 +94,17 @@
     "coverPath": "https://skynigh1.github.io/SoundStorage/cover/Mutter.jpg",
     "uploadDate": "2025-07-29T14:45:34.849Z",
     "uploadedBy": "user"
+  },
+  {
+    "id": "song_1753800427272",
+    "title": "Ich Will",
+    "artist": "Rammstein",
+    "album": "Mutter",
+    "trackNumber": 4,
+    "duration": 217,
+    "filePath": "https://skynigh1.github.io/SoundStorage/audio/04_Ich will.mp3",
+    "coverPath": "https://skynigh1.github.io/SoundStorage/cover/Mutter.jpg",
+    "uploadDate": "2025-07-29T14:47:07.272Z",
+    "uploadedBy": "user"
   }
 ]
