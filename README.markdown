@@ -33,18 +33,6 @@ If any copyrighted music is referenced in the project (e.g., in the `song.json` 
 
 **Important**: Users of this project are responsible for ensuring that any music files added to the application comply with applicable copyright laws. The developer assumes no liability for the misuse of copyrighted content by others.
 
-## Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/symphony.git
-   ```
-2. Navigate to the project directory:
-   ```bash
-   cd symphony
-   ```
-3. Open `index.html` in a web browser to run the application locally. No server is required, as the application runs entirely client-side.
-
 ## Usage
 
 - **Adding Songs**: Populate the `song.json` file or modify the `songs` array in `app.js` with song metadata (title, artist, filePath, coverPath). Ensure that any audio files used are legally sourced.
@@ -92,7 +80,3 @@ If any copyrighted music is referenced in the project (e.g., in the `song.json` 
 ## Legal Notice
 
 This project is provided "as is" for educational purposes only. The developer makes no representations or warranties regarding the use of any copyrighted material. Users must ensure compliance with copyright laws when adding music files to the application. The developer is not responsible for any legal issues arising from the misuse of this project.
-
-## Contact
-
-For questions or feedback, please contact [your-name] at [your-email]. This project is open to contributions for educational purposes, but please respect the non-commercial nature of the project.
