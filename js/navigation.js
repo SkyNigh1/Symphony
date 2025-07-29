@@ -15,14 +15,12 @@ export function initNavigation() {
             const view = item.querySelector('.nav-link').textContent.trim();
             contentTitle.textContent = view;
             
-            // Réinitialiser la structure de base avant d'afficher la nouvelle vue
             resetContentArea(view);
             displayView(view);
         });
     });
 }
 
-// Fonction pour réinitialiser la zone de contenu à la structure de base
 function resetContentArea(title) {
     const contentArea = document.querySelector('.content-area');
     contentArea.innerHTML = `
@@ -33,7 +31,6 @@ function resetContentArea(title) {
     `;
 }
 
-// Fonction pour restaurer la structure normale du contenu
 function ensureContentGridExists() {
     const contentArea = document.querySelector('.content-area');
     
@@ -241,15 +238,6 @@ function displayAlbumDetails(album) {
     
     contentArea.innerHTML = `
         <div class="album-detail-view">
-            <div class="album-back-button">
-                <button class="back-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 12H5M12 19l-7-7 7-7"></path>
-                    </svg>
-                    <span>Retour aux albums</span>
-                </button>
-            </div>
-            
             <div class="album-header">
                 <div class="album-info">
                     <h1 class="album-title">${album}</h1>
@@ -287,25 +275,6 @@ function displayAlbumDetails(album) {
             </div>
         </div>
     `;
-    
-    const backBtn = contentArea.querySelector('.back-btn');
-    backBtn.addEventListener('click', () => {
-        const contentTitle = document.querySelector('.content-title');
-        contentTitle.textContent = 'Albums';
-        
-        const navItems = document.querySelectorAll('.nav-item');
-        navItems.forEach(item => item.classList.remove('active'));
-        const albumsNavItem = Array.from(navItems).find(item => 
-            item.querySelector('.nav-link').textContent.trim() === 'Albums'
-        );
-        if (albumsNavItem) {
-            albumsNavItem.classList.add('active');
-        }
-        
-        resetContentArea('Albums');
-        const albums = [...new Set(songs.map(song => song.album))];
-        displayAlbums(albums);
-    });
     
     const trackRows = contentArea.querySelectorAll('.track-row');
     trackRows.forEach(row => {
