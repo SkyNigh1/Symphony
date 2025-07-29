@@ -572,3 +572,269 @@
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
 }
+
+/* Album Detail View Styles */
+.album-detail-view {
+    padding: 2rem 0;
+}
+
+.album-header {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    align-items: flex-start;
+}
+
+.album-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.album-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+    line-height: 1.1;
+}
+
+.album-artist {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    margin: 0 0 1rem 0;
+    font-weight: 500;
+}
+
+.album-meta {
+    display: flex;
+    gap: 2rem;
+    font-size: 1rem;
+    color: var(--text-muted);
+}
+
+.album-track-count,
+.album-duration {
+    font-weight: 500;
+}
+
+.album-cover-large {
+    flex-shrink: 0;
+    width: 250px;
+    height: 250px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    background: var(--bg-secondary);
+}
+
+.album-cover-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.album-tracks {
+    background: var(--surface-color);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.tracks-list {
+    padding: 1rem 0;
+}
+
+.track-row {
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border-radius: 6px;
+    margin: 0 1rem;
+}
+
+.track-row:hover {
+    background: var(--bg-hover);
+}
+
+.track-row.playing {
+    background: rgba(140, 69, 255, 0.1);
+    color: var(--accent-primary);
+}
+
+.track-number {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.track-number .number {
+    font-size: 1rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+}
+
+.track-row:hover .track-number .number {
+    opacity: 0;
+}
+
+.play-btn-track {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s ease;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.track-row:hover .play-btn-track {
+    opacity: 1;
+}
+
+.play-btn-track:hover {
+    color: var(--accent-primary);
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.play-btn-track .pause-icon {
+    display: none;
+}
+
+.track-row.playing .play-btn-track .play-icon {
+    display: none;
+}
+
+.track-row.playing .play-btn-track .pause-icon {
+    display: block;
+}
+
+.track-name {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 1rem;
+}
+
+.track-row:hover .track-name {
+    color: var(--text-primary);
+}
+
+.track-duration {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    text-align: right;
+    min-width: 50px;
+}
+
+/* Responsive pour la vue d'album */
+@media (max-width: 968px) {
+    .album-header {
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .album-title {
+        font-size: 2.5rem;
+    }
+    
+    .album-artist {
+        font-size: 1.25rem;
+    }
+    
+    .album-cover-large {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .track-row {
+        grid-template-columns: 50px 1fr auto;
+        padding: 0.5rem 1rem;
+        margin: 0 0.5rem;
+    }
+    
+    .track-number {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .track-name {
+        font-size: 0.95rem;
+    }
+    
+    .track-duration {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .album-detail-view {
+        padding: 1rem 0;
+    }
+    
+    .album-title {
+        font-size: 2rem;
+    }
+    
+    .album-artist {
+        font-size: 1.1rem;
+    }
+    
+    .album-meta {
+        gap: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .album-cover-large {
+        width: 180px;
+        height: 180px;
+    }
+    
+    .track-row {
+        grid-template-columns: 45px 1fr auto;
+        padding: 0.5rem 0.75rem;
+        margin: 0 0.25rem;
+    }
+    
+    .track-number {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .track-number .number {
+        font-size: 0.9rem;
+    }
+    
+    .play-btn-track svg {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .track-name {
+        font-size: 0.9rem;
+    }
+    
+    .track-duration {
+        font-size: 0.85rem;
+    }
+}

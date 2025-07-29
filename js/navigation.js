@@ -113,7 +113,7 @@ function displayAlbums(albums) {
             if (!e.target.closest('.favorite-btn')) {
                 const contentTitle = document.querySelector('.content-title');
                 contentTitle.textContent = album;
-                displayViewByAlbum(album);
+                displayAlbumDetails(album);
             }
         });
         
@@ -169,6 +169,97 @@ function displayArtists(artists) {
         });
         
         contentGrid.appendChild(artistCard);
+    });
+}
+
+function displayAlbumDetails(album) {
+    const contentArea = document.querySelector('.content-area');
+    const albumSongs = songs.filter(song => song.album === album)
+        .sort((a, b) => (a.trackNumber || 0) - (b.trackNumber || 0));
+    
+    if (albumSongs.length === 0) return;
+    
+    const firstSong = albumSongs[0];
+    
+    // Calculer la durée totale
+    const totalDuration = albumSongs.reduce((total, song) => {
+        // Supposons que chaque chanson a une durée en secondes
+        return total + (song.duration || 180); // 3 minutes par défaut si pas de durée
+    }, 0);
+    
+    const formatDuration = (seconds) => {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        if (hours > 0) {
+            return `${hours}h ${minutes}min`;
+        }
+        return `${minutes}min`;
+    };
+    
+    const formatTrackDuration = (seconds) => {
+        const minutes = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${minutes}:${secs.toString().padStart(2, '0')}`;
+    };
+    
+    // Créer le HTML pour la vue détaillée
+    contentArea.innerHTML = `
+        <div class="album-detail-view">
+            <div class="album-header">
+                <div class="album-info">
+                    <h1 class="album-title">${album}</h1>
+                    <p class="album-artist">${firstSong.artist}</p>
+                    <div class="album-meta">
+                        <span class="album-track-count">${albumSongs.length} morceaux</span>
+                        <span class="album-duration">${formatDuration(totalDuration)}</span>
+                    </div>
+                </div>
+                <div class="album-cover-large">
+                    <img src="${firstSong.coverPath || 'assets/images/default-cover.jpg'}" alt="${album}">
+                </div>
+            </div>
+            
+            <div class="album-tracks">
+                <div class="tracks-list">
+                    ${albumSongs.map((song, index) => `
+                        <div class="track-row" data-song-id="${song.id}">
+                            <div class="track-number">
+                                <span class="number">${song.trackNumber || index + 1}</span>
+                                <button class="play-btn-track">
+                                    <svg class="play-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M8 5v14l11-7z"></path>
+                                    </svg>
+                                    <svg class="pause-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="track-name">${song.title}</div>
+                            <div class="track-duration">${formatTrackDuration(song.duration || 180)}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Ajouter les événements pour les tracks
+    const trackRows = contentArea.querySelectorAll('.track-row');
+    trackRows.forEach(row => {
+        const songId = row.dataset.songId;
+        const song = songs.find(s => s.id === songId);
+        
+        row.addEventListener('click', () => {
+            playSong(song);
+        });
+        
+        row.addEventListener('mouseenter', () => {
+            row.classList.add('hover');
+        });
+        
+        row.addEventListener('mouseleave', () => {
+            row.classList.remove('hover');
+        });
     });
 }
 
