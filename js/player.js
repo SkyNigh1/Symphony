@@ -732,39 +732,33 @@ function updateQueue() {
 
         queueItem.addEventListener('click', (e) => {
             if (!e.target.closest('.queue-action-btn')) {
+                console.log('Playing song from queue:', song.id);
                 playSong(song);
             }
         });
 
         const favoriteBtn = queueItem.querySelector('.song-favorite');
-        updateFavoriteButton(favoriteBtn, song.id);
+        // Initialiser l'état du bouton favori
+        import('./favorites.js').then(({ isSongFavorite, updateSongFavoriteButton }) => {
+            const isFavorite = isSongFavorite(song.id);
+            updateSongFavoriteButton(favoriteBtn, song.id);
+            console.log(`Initial favorite state for song ${song.id}: ${isFavorite}`);
+        });
 
         favoriteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            import('./favorites.js').then(({ toggleSongFavorite, updateSongFavoriteButton }) => {
+            console.log(`Favorite button clicked for song ${song.id}`);
+            import('./favorites.js').then(({ toggleSongFavorite, updateSongFavoriteButton, updateAllFavoriteButtons }) => {
                 toggleSongFavorite(song.id);
                 updateSongFavoriteButton(favoriteBtn, song.id);
+                // Mettre à jour tous les boutons favoris pour synchroniser l'interface
+                updateAllFavoriteButtons();
+                console.log(`Favorites updated for song ${song.id}. Current favorites:`, JSON.parse(localStorage.getItem('favorites') || '[]'));
+            }).catch(error => {
+                console.error('Error importing favorites.js:', error);
             });
         });
 
         queueList.appendChild(queueItem);
-    });
-
-    // Mettre à jour l'état des boutons favoris
-    import('./favorites.js').then(({ updateAllFavoriteButtons }) => {
-        updateAllFavoriteButtons();
-    });
-}
-
-function updateFavoriteButton(button, songId) {
-    import('./favorites.js').then(({ isSongFavorite }) => {
-        const isFavorite = isSongFavorite(songId);
-        if (isFavorite) {
-            button.classList.add('active');
-            button.querySelector('svg').setAttribute('fill', 'currentColor');
-        } else {
-            button.classList.remove('active');
-            button.querySelector('svg').setAttribute('fill', 'none');
-        }
     });
 }
