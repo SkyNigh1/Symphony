@@ -14,32 +14,40 @@ export function initNavigation() {
 
             const view = item.querySelector('.nav-link').textContent.trim();
             contentTitle.textContent = view;
+            
+            // Réinitialiser la structure de base avant d'afficher la nouvelle vue
+            resetContentArea(view);
             displayView(view);
         });
     });
+}
+
+// Fonction pour réinitialiser la zone de contenu à la structure de base
+function resetContentArea(title) {
+    const contentArea = document.querySelector('.content-area');
+    contentArea.innerHTML = `
+        <div class="content-header">
+            <h2 class="content-title">${title}</h2>
+        </div>
+        <div class="content-grid"></div>
+    `;
 }
 
 // Fonction pour restaurer la structure normale du contenu
 function ensureContentGridExists() {
     const contentArea = document.querySelector('.content-area');
     
-    // Vérifier si on a la structure normale (header + grid)
     let contentHeader = contentArea.querySelector('.content-header');
     let contentGrid = contentArea.querySelector('.content-grid');
     
-    // Si on n'a pas la structure normale, la recréer
     if (!contentHeader || !contentGrid) {
-        // Sauvegarder le titre actuel
-        const currentTitle = document.querySelector('.content-title').textContent;
-        
-        // Recréer la structure normale
+        const currentTitle = document.querySelector('.content-title')?.textContent || 'Content';
         contentArea.innerHTML = `
             <div class="content-header">
                 <h2 class="content-title">${currentTitle}</h2>
             </div>
             <div class="content-grid"></div>
         `;
-        
         contentGrid = contentArea.querySelector('.content-grid');
     }
     
@@ -47,7 +55,6 @@ function ensureContentGridExists() {
 }
 
 function displayView(view) {
-    // S'assurer que la structure normale existe
     const contentGrid = ensureContentGridExists();
     
     if (!contentGrid) {
@@ -55,7 +62,6 @@ function displayView(view) {
         return;
     }
     
-    // Vider le contenu de la grille
     contentGrid.innerHTML = '';
 
     let filteredSongs = [];
@@ -95,13 +101,12 @@ function displayView(view) {
     }
 
     filteredSongs.forEach(song => {
-        const songCard = createSongCard(song, true); // true pour afficher le bouton favori
+        const songCard = createSongCard(song, true);
         contentGrid.appendChild(songCard);
     });
 }
 
 function displayAlbums(albums) {
-    // S'assurer que la structure normale existe
     const contentGrid = ensureContentGridExists();
     
     if (!contentGrid) {
@@ -142,7 +147,6 @@ function displayAlbums(albums) {
             </div>
         `;
         
-        // Gérer le clic sur l'album pour afficher ses chansons
         albumCard.addEventListener('click', (e) => {
             if (!e.target.closest('.favorite-btn')) {
                 const contentTitle = document.querySelector('.content-title');
@@ -151,7 +155,6 @@ function displayAlbums(albums) {
             }
         });
         
-        // Gérer le favori pour l'album (ajouter/retirer tous les morceaux)
         const favoriteBtn = albumCard.querySelector('.album-favorite');
         updateAlbumFavoriteButton(favoriteBtn, album);
         
@@ -166,7 +169,6 @@ function displayAlbums(albums) {
 }
 
 function displayArtists(artists) {
-    // S'assurer que la structure normale existe
     const contentGrid = ensureContentGridExists();
     
     if (!contentGrid) {
@@ -218,10 +220,8 @@ function displayAlbumDetails(album) {
     
     const firstSong = albumSongs[0];
     
-    // Calculer la durée totale
     const totalDuration = albumSongs.reduce((total, song) => {
-        // Supposons que chaque chanson a une durée en secondes
-        return total + (song.duration || 180); // 3 minutes par défaut si pas de durée
+        return total + (song.duration || 180);
     }, 0);
     
     const formatDuration = (seconds) => {
@@ -239,8 +239,6 @@ function displayAlbumDetails(album) {
         return `${minutes}:${secs.toString().padStart(2, '0')}`;
     };
     
-    // AJOUTER UN BOUTON DE RETOUR
-    // Créer le HTML pour la vue détaillée avec bouton de retour
     contentArea.innerHTML = `
         <div class="album-detail-view">
             <div class="album-back-button">
@@ -290,14 +288,11 @@ function displayAlbumDetails(album) {
         </div>
     `;
     
-    // Ajouter l'événement pour le bouton de retour
     const backBtn = contentArea.querySelector('.back-btn');
     backBtn.addEventListener('click', () => {
-        // Retourner à la vue Albums
         const contentTitle = document.querySelector('.content-title');
         contentTitle.textContent = 'Albums';
         
-        // Réactiver l'onglet Albums dans la navigation
         const navItems = document.querySelectorAll('.nav-item');
         navItems.forEach(item => item.classList.remove('active'));
         const albumsNavItem = Array.from(navItems).find(item => 
@@ -307,12 +302,11 @@ function displayAlbumDetails(album) {
             albumsNavItem.classList.add('active');
         }
         
-        // Afficher la liste des albums
+        resetContentArea('Albums');
         const albums = [...new Set(songs.map(song => song.album))];
         displayAlbums(albums);
     });
     
-    // Ajouter les événements pour les tracks
     const trackRows = contentArea.querySelectorAll('.track-row');
     trackRows.forEach(row => {
         const songId = row.dataset.songId;
@@ -333,7 +327,6 @@ function displayAlbumDetails(album) {
 }
 
 function displayViewByAlbum(album) {
-    // S'assurer que la structure normale existe
     const contentGrid = ensureContentGridExists();
     
     if (!contentGrid) {
@@ -344,13 +337,12 @@ function displayViewByAlbum(album) {
     const filteredSongs = songs.filter(song => song.album === album);
     contentGrid.innerHTML = '';
     filteredSongs.forEach(song => {
-        const songCard = createSongCard(song, true); // true pour afficher le bouton favori
+        const songCard = createSongCard(song, true);
         contentGrid.appendChild(songCard);
     });
 }
 
 function displayViewByArtist(artist) {
-    // S'assurer que la structure normale existe
     const contentGrid = ensureContentGridExists();
     
     if (!contentGrid) {
@@ -361,12 +353,11 @@ function displayViewByArtist(artist) {
     const filteredSongs = songs.filter(song => song.artist === artist);
     contentGrid.innerHTML = '';
     filteredSongs.forEach(song => {
-        const songCard = createSongCard(song, true); // true pour afficher le bouton favori
+        const songCard = createSongCard(song, true);
         contentGrid.appendChild(songCard);
     });
 }
 
-// Fonction utilitaire pour créer une carte de chanson avec bouton favori
 function createSongCard(song, showFavoriteBtn = false) {
     const songCard = document.createElement('div');
     songCard.className = 'track-card';
@@ -401,14 +392,12 @@ function createSongCard(song, showFavoriteBtn = false) {
         </div>
     `;
     
-    // Gérer le clic sur la chanson pour la jouer
     songCard.addEventListener('click', (e) => {
         if (!e.target.closest('.favorite-btn')) {
             playSong(song);
         }
     });
     
-    // Gérer le bouton favori si présent
     if (showFavoriteBtn) {
         const favoriteBtn = songCard.querySelector('.song-favorite');
         updateSongFavoriteButton(favoriteBtn, song.id);
@@ -423,7 +412,6 @@ function createSongCard(song, showFavoriteBtn = false) {
     return songCard;
 }
 
-// Fonctions pour gérer les favoris
 function toggleSongFavorite(songId) {
     const favorites = getFavorites();
     if (favorites.includes(songId)) {
@@ -439,10 +427,8 @@ function toggleAlbumFavorite(album) {
     const allFavorited = albumSongs.every(song => favorites.includes(song.id));
     
     if (allFavorited) {
-        // Retirer tous les morceaux de l'album des favoris
         albumSongs.forEach(song => removeFavorite(song.id));
     } else {
-        // Ajouter tous les morceaux de l'album aux favoris
         albumSongs.forEach(song => addFavorite(song.id));
     }
 }
