@@ -40,22 +40,6 @@ If any copyrighted music is referenced in the project (e.g., in the `song.json` 
 - **Managing Favorites**: Click the heart icon on song cards or in the queue to add/remove songs from favorites.
 - **Queue Navigation**: View and interact with the "Up Next" queue in the player to select upcoming songs.
 
-## Project Structure
-
-- `index.html`: Main HTML file for the application.
-- `player.html`: Template for the music player interface.
-- `css/`
-  - `styles.css`: Global styles for the application.
-  - `player.css`: Styles specific to the music player and queue.
-- `js/`
-  - `app.js`: Main application logic and song data.
-  - `player.js`: Handles audio playback, queue management, and color extraction.
-  - `favorites.js`: Manages the favorites system using `localStorage`.
-  - `database.js`: Utility functions for storing and retrieving data.
-  - `utils.js`: Helper functions (e.g., time formatting).
-- `assets/`: Contains images (e.g., default cover art) and sample audio files (if applicable).
-- `song.json`: Sample song metadata for testing.
-
 ## Technologies Used
 
 - **HTML5**: For structuring the application.
@@ -63,19 +47,13 @@ If any copyrighted music is referenced in the project (e.g., in the `song.json` 
 - **JavaScript (ES6+)**: For interactivity and dynamic updates.
 - **LocalStorage**: For persisting favorites data.
 - **Web Audio API**: For audio playback and control.
+- **Netlify functions**: For updating tracks data.
 
 ## Limitations
 
 - The application is designed for desktop use, with the queue section hidden on mobile devices (screen width < 968px) by default.
-- No backend or server-side functionality is included; all data is stored client-side.
+- no direct storage of music files due to lack of hosting equipment, the user is therefore forced to host his own music, Symphony hinders the management of these links .
 - The project does not support advanced features like playlists or streaming from external APIs, as it is focused on front-end development.
-
-## Future Improvements
-
-- Add support for playlists to group songs.
-- Implement a shuffle and repeat mode for the queue.
-- Enhance mobile responsiveness to display the queue on smaller screens.
-- Integrate a mock API for simulated streaming functionality.
 
 ## Legal Notice
 
