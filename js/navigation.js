@@ -19,12 +19,43 @@ export function initNavigation() {
     });
 }
 
+// Fonction pour restaurer la structure normale du contenu
+function ensureContentGridExists() {
+    const contentArea = document.querySelector('.content-area');
+    
+    // Vérifier si on a la structure normale (header + grid)
+    let contentHeader = contentArea.querySelector('.content-header');
+    let contentGrid = contentArea.querySelector('.content-grid');
+    
+    // Si on n'a pas la structure normale, la recréer
+    if (!contentHeader || !contentGrid) {
+        // Sauvegarder le titre actuel
+        const currentTitle = document.querySelector('.content-title').textContent;
+        
+        // Recréer la structure normale
+        contentArea.innerHTML = `
+            <div class="content-header">
+                <h2 class="content-title">${currentTitle}</h2>
+            </div>
+            <div class="content-grid"></div>
+        `;
+        
+        contentGrid = contentArea.querySelector('.content-grid');
+    }
+    
+    return contentGrid;
+}
+
 function displayView(view) {
-    const contentGrid = document.querySelector('.content-grid');
+    // S'assurer que la structure normale existe
+    const contentGrid = ensureContentGridExists();
+    
     if (!contentGrid) {
-        console.error('Error: .content-grid element not found in the DOM for view:', view);
+        console.error('Error: Could not create or find .content-grid element');
         return;
     }
+    
+    // Vider le contenu de la grille
     contentGrid.innerHTML = '';
 
     let filteredSongs = [];
@@ -70,11 +101,14 @@ function displayView(view) {
 }
 
 function displayAlbums(albums) {
-    const contentGrid = document.querySelector('.content-grid');
+    // S'assurer que la structure normale existe
+    const contentGrid = ensureContentGridExists();
+    
     if (!contentGrid) {
-        console.error('Error: .content-grid element not found in the DOM for albums');
+        console.error('Error: Could not create or find .content-grid element for albums');
         return;
     }
+    
     contentGrid.innerHTML = '';
 
     albums.forEach(album => {
@@ -132,11 +166,14 @@ function displayAlbums(albums) {
 }
 
 function displayArtists(artists) {
-    const contentGrid = document.querySelector('.content-grid');
+    // S'assurer que la structure normale existe
+    const contentGrid = ensureContentGridExists();
+    
     if (!contentGrid) {
-        console.error('Error: .content-grid element not found in the DOM for artists');
+        console.error('Error: Could not create or find .content-grid element for artists');
         return;
     }
+    
     contentGrid.innerHTML = '';
 
     artists.forEach(artist => {
@@ -202,9 +239,19 @@ function displayAlbumDetails(album) {
         return `${minutes}:${secs.toString().padStart(2, '0')}`;
     };
     
-    // Créer le HTML pour la vue détaillée
+    // AJOUTER UN BOUTON DE RETOUR
+    // Créer le HTML pour la vue détaillée avec bouton de retour
     contentArea.innerHTML = `
         <div class="album-detail-view">
+            <div class="album-back-button">
+                <button class="back-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                    </svg>
+                    <span>Retour aux albums</span>
+                </button>
+            </div>
+            
             <div class="album-header">
                 <div class="album-info">
                     <h1 class="album-title">${album}</h1>
@@ -243,6 +290,28 @@ function displayAlbumDetails(album) {
         </div>
     `;
     
+    // Ajouter l'événement pour le bouton de retour
+    const backBtn = contentArea.querySelector('.back-btn');
+    backBtn.addEventListener('click', () => {
+        // Retourner à la vue Albums
+        const contentTitle = document.querySelector('.content-title');
+        contentTitle.textContent = 'Albums';
+        
+        // Réactiver l'onglet Albums dans la navigation
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => item.classList.remove('active'));
+        const albumsNavItem = Array.from(navItems).find(item => 
+            item.querySelector('.nav-link').textContent.trim() === 'Albums'
+        );
+        if (albumsNavItem) {
+            albumsNavItem.classList.add('active');
+        }
+        
+        // Afficher la liste des albums
+        const albums = [...new Set(songs.map(song => song.album))];
+        displayAlbums(albums);
+    });
+    
     // Ajouter les événements pour les tracks
     const trackRows = contentArea.querySelectorAll('.track-row');
     trackRows.forEach(row => {
@@ -264,11 +333,14 @@ function displayAlbumDetails(album) {
 }
 
 function displayViewByAlbum(album) {
-    const contentGrid = document.querySelector('.content-grid');
+    // S'assurer que la structure normale existe
+    const contentGrid = ensureContentGridExists();
+    
     if (!contentGrid) {
-        console.error('Error: .content-grid element not found in the DOM for album:', album);
+        console.error('Error: Could not create or find .content-grid element for album:', album);
         return;
     }
+    
     const filteredSongs = songs.filter(song => song.album === album);
     contentGrid.innerHTML = '';
     filteredSongs.forEach(song => {
@@ -278,11 +350,14 @@ function displayViewByAlbum(album) {
 }
 
 function displayViewByArtist(artist) {
-    const contentGrid = document.querySelector('.content-grid');
+    // S'assurer que la structure normale existe
+    const contentGrid = ensureContentGridExists();
+    
     if (!contentGrid) {
-        console.error('Error: .content-grid element not found in the DOM for artist:', artist);
+        console.error('Error: Could not create or find .content-grid element for artist:', artist);
         return;
     }
+    
     const filteredSongs = songs.filter(song => song.artist === artist);
     contentGrid.innerHTML = '';
     filteredSongs.forEach(song => {
