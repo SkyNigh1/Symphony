@@ -1,4 +1,5 @@
 import { formatTime } from './utils.js';
+import { songs } from './app.js';
 
 let currentSong = null;
 let isPlaying = false;
@@ -633,25 +634,21 @@ function updatePlayPauseButton() {
 function playNext() {
     if (!currentSong) return;
     
-    import('./app.js').then(({ songs }) => {
-        const currentIndex = songs.findIndex(song => song.id === currentSong.id);
-        const nextIndex = (currentIndex + 1) % songs.length;
-        if (songs[nextIndex]) {
-            playSong(songs[nextIndex]);
-        }
-    });
+    const currentIndex = songs.findIndex(song => song.id === currentSong.id);
+    const nextIndex = (currentIndex + 1) % songs.length;
+    if (songs[nextIndex]) {
+        playSong(songs[nextIndex]);
+    }
 }
 
 function playPrevious() {
     if (!currentSong) return;
     
-    import('./app.js').then(({ songs }) => {
-        const currentIndex = songs.findIndex(song => song.id === currentSong.id);
-        const prevIndex = currentIndex > 0 ? currentIndex - 1 : songs.length - 1;
-        if (songs[prevIndex]) {
-            playSong(songs[prevIndex]);
-        }
-    });
+    const currentIndex = songs.findIndex(song => song.id === currentSong.id);
+    const prevIndex = currentIndex > 0 ? currentIndex - 1 : songs.length - 1;
+    if (songs[prevIndex]) {
+        playSong(songs[prevIndex]);
+    }
 }
 
 function setVolume(vol) {
@@ -688,9 +685,86 @@ function updateQueue() {
     const queueList = document.querySelector('.queue-list');
     if (!queueList) return;
 
-    queueList.innerHTML = `
+    if (!currentSong || songs.length === 0) {
+        queueList.innerHTML = `
+            <div class="queue-empty">
+                <p>Aucune chanson dans la file d'attente</p>
+            </div>
+        `;
+        return;
+    }
+
+    const currentIndex = songs.findIndex(song => song.id === currentSong.id);
+    // Inclure toutes les chansons à partir de l'index actuel + 1, et boucler si nécessaire
+    const queueSongs = [];
+    for (let i = 0; i < songs.length; i++) {
+        const index = (currentIndex + 1 + i) % songs.length;
+        queueSongs.push(songs[index]);
+    }
+
+    queueList.innerHTML = queueSongs.length > 0 ? '' : `
         <div class="queue-empty">
-            <p>Lecture en cours: ${currentSong?.title || 'Aucune chanson'}</p>
+            <p>Aucune chanson à suivre</p>
         </div>
     `;
+
+    queueSongs.forEach(song => {
+        const queueItem = document.createElement('div');
+        queueItem.className = 'queue-item';
+        queueItem.dataset.songId = song.id;
+
+        queueItem.innerHTML = `
+            <div class="queue-item-cover">
+                <img src="${song.coverPath || 'assets/images/default-cover.jpg'}" alt="${song.title}">
+            </div>
+            <div class="queue-item-info">
+                <h3 class="queue-item-title">${song.title}</h3>
+                <p class="queue-item-artist">${song.artist}</p>
+            </div>
+            <div class="queue-item-actions">
+                <button class="queue-action-btn favorite-btn song-favorite" data-song-id="${song.id}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                    </svg>
+                </button>
+            </div>
+        `;
+
+        queueItem.addEventListener('click', (e) => {
+            if (!e.target.closest('.queue-action-btn')) {
+                playSong(song);
+            }
+        });
+
+        const favoriteBtn = queueItem.querySelector('.song-favorite');
+        updateFavoriteButton(favoriteBtn, song.id);
+
+        favoriteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            import('./favorites.js').then(({ toggleSongFavorite, updateSongFavoriteButton }) => {
+                toggleSongFavorite(song.id);
+                updateSongFavoriteButton(favoriteBtn, song.id);
+            });
+        });
+
+        queueList.appendChild(queueItem);
+    });
+
+    // Mettre à jour l'état des boutons favoris
+    import('./favorites.js').then(({ updateAllFavoriteButtons }) => {
+        updateAllFavoriteButtons();
+    });
+}
+
+function updateFavoriteButton(button, songId) {
+    import('./favorites.js').then(({ isSongFavorite }) => {
+        const isFavorite = isSongFavorite(songId);
+        if (isFavorite) {
+            button.classList.add('active');
+            button.querySelector('svg').setAttribute('fill', 'currentColor');
+        } else {
+            button.classList.remove('active');
+            button.querySelector('svg').setAttribute('fill', 'none');
+        }
+    });
 }
